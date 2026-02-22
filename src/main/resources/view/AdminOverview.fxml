@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="650.0" prefWidth="850.0" style="-fx-background-color: #0f172a;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AdminOverviewController">
+    <children>
+        <VBox layoutX="40.0" layoutY="30.0" spacing="20.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="30.0">
+            <children>
+                <VBox spacing="5.0">
+                    <children>
+                        <Label text="Administrator Dashboard" textFill="WHITE">
+                            <font>
+                                <Font name="Segoe UI Bold" size="28.0" />
+                            </font>
+                        </Label>
+                        <Label text="High-level system metrics and financial overview." textFill="#94a3b8">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                        </Label>
+                    </children>
+                </VBox>
+
+                <HBox spacing="15.0">
+                    <children>
+                        <VBox prefHeight="110.0" prefWidth="175.0" style="-fx-background-color: #1e293b; -fx-background-radius: 12; -fx-padding: 15; -fx-border-color: #a855f7; -fx-border-radius: 12;">
+                            <children>
+                                <Label text="Total Users" textFill="#94a3b8" />
+                                <Region VBox.vgrow="ALWAYS" />
+                                <Label fx:id="lblTotalUsers" text="0" textFill="WHITE">
+                                    <font>
+                                        <Font name="System Bold" size="28.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+
+                        <VBox prefHeight="110.0" prefWidth="175.0" style="-fx-background-color: #1e293b; -fx-background-radius: 12; -fx-padding: 15; -fx-border-color: #10b981; -fx-border-radius: 12;">
+                            <children>
+                                <Label text="Paid Fines (LKR)" textFill="#94a3b8" />
+                                <Region VBox.vgrow="ALWAYS" />
+                                <Label fx:id="lblTotalPaid" text="0.00" textFill="#10b981">
+                                    <font>
+                                        <Font name="System Bold" size="28.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+
+                        <VBox prefHeight="110.0" prefWidth="175.0" style="-fx-background-color: #1e293b; -fx-background-radius: 12; -fx-padding: 15; -fx-border-color: #ef4444; -fx-border-radius: 12;">
+                            <children>
+                                <Label text="Unpaid Fines (LKR)" textFill="#94a3b8" />
+                                <Region VBox.vgrow="ALWAYS" />
+                                <Label fx:id="lblTotalUnpaid" text="0.00" textFill="#ef4444">
+                                    <font>
+                                        <Font name="System Bold" size="28.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+
+                        <VBox prefHeight="110.0" prefWidth="175.0" style="-fx-background-color: #1e293b; -fx-background-radius: 12; -fx-padding: 15; -fx-border-color: #f59e0b; -fx-border-radius: 12;">
+                            <children>
+                                <Label text="Unreturned Books" textFill="#94a3b8" />
+                                <Region VBox.vgrow="ALWAYS" />
+                                <Label fx:id="lblUnreturned" text="0" textFill="WHITE">
+                                    <font>
+                                        <Font name="System Bold" size="28.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+
+                <HBox alignment="CENTER_LEFT" spacing="15.0" style="-fx-background-color: #1e293b; -fx-background-radius: 12; -fx-padding: 15;">
+                    <children>
+                        <Label text="Fine Per Overdue Day (LKR):" textFill="WHITE">
+                            <font>
+                                <Font name="System Bold" size="14.0" />
+                            </font>
+                        </Label>
+                        <TextField fx:id="txtFinePerDay" prefHeight="35.0" prefWidth="120.0" promptText="e.g. 15.00" style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-border-color: #334155; -fx-border-radius: 5;" />
+                        <Button fx:id="btnSaveFine" onAction="#saveFineOnAction" prefHeight="35.0" prefWidth="100.0" style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-cursor: hand;" text="Update" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label fx:id="lblFineUpdateStatus" textFill="#10b981">
+                            <font>
+                                <Font size="13.0" />
+                            </font>
+                        </Label>
+                    </children>
+                </HBox>
+
+                <VBox spacing="10.0" style="-fx-background-color: #1e293b; -fx-background-radius: 15; -fx-padding: 20;" VBox.vgrow="ALWAYS">
+                    <children>
+                        <Label text="Recent Rental Activity" textFill="WHITE">
+                            <font>
+                                <Font name="System Bold" size="18.0" />
+                            </font>
+                        </Label>
+
+                        <TableView fx:id="tblRecentRentals" prefHeight="215.0" prefWidth="684.0" style="-fx-base: #1e293b; -fx-control-inner-background: #1e293b; -fx-background-color: #1e293b; -fx-table-cell-border-color: #334155; -fx-table-header-background-color: #0f172a;" VBox.vgrow="ALWAYS">
+                            <columns>
+                                <TableColumn fx:id="colDate" prefWidth="201.0" text="Issue Date" style="-fx-alignment: CENTER;"/>
+                                <TableColumn fx:id="colCustomerName" prefWidth="179.0" text="Customer Name" style="-fx-alignment: CENTER;"/>
+                                <TableColumn fx:id="colBookTitle" prefWidth="183.0" text="Book Title" style="-fx-alignment: CENTER;"/>
+                                <TableColumn fx:id="colStatus" prefWidth="166.0" text="Status" style="-fx-alignment: CENTER;"/>
+                            </columns>
+                        </TableView>
+
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>

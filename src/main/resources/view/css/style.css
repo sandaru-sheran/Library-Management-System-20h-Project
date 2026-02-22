@@ -1,0 +1,33 @@
+/* 1. The Main Dark Blue/Black Background */
+.notification-bar {
+    -fx-background-color: #0f172a;
+    -fx-border-color: #a855f7; /* Matches your active purple sidebar buttons! */
+    -fx-border-width: 2px;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+    -fx-padding: 15px;
+}
+
+/* 2. Make the Title Pure White */
+.notification-bar > .pane .title {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+/* 3. Make the Message Text Light Grey */
+.notification-bar > .pane .label {
+    -fx-text-fill: #cbd5e1;
+    -fx-font-size: 14px;
+}
+
+/* 4. Fix the Close "X" Button */
+.notification-bar > .close-button {
+    -fx-background-color: transparent;
+}
+.notification-bar > .close-button > .graphic {
+    -fx-background-color: #cbd5e1;
+}
+.notification-bar > .close-button:hover > .graphic {
+    -fx-background-color: #ef4444; /* Turns red when hovered */
+}

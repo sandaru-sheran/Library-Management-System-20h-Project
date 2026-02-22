@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="650.0" prefWidth="950.0" style="-fx-background-color: #0f172a;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.RentalManagementController">
+    <children>
+        <VBox layoutX="30.0" layoutY="30.0" spacing="20.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="30.0">
+            <children>
+                <VBox spacing="5.0">
+                    <children>
+                        <Label text="Rental Operations" textFill="WHITE">
+                            <font>
+                                <Font name="Segoe UI Bold" size="24.0" />
+                            </font>
+                        </Label>
+                        <Label text="Issue new books or process returns and fines." textFill="#94a3b8" />
+                    </children>
+                </VBox>
+
+                <VBox spacing="15.0" style="-fx-background-color: #1e293b; -fx-padding: 20; -fx-background-radius: 15; -fx-border-color: #334155; -fx-border-radius: 15;">
+                    <children>
+                        <Label text="Issue New Book" textFill="#3b82f6">
+                            <font>
+                                <Font name="System Bold" size="16.0" />
+                            </font>
+                        </Label>
+                        <HBox spacing="15.0">
+                            <children>
+                                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                                    <children>
+                                        <Label text="Customer ID" textFill="#94a3b8" />
+                                        <TextField fx:id="txtRentalCustId" prefHeight="35.0" promptText="Enter ID" style="-fx-background-color: #0f172a; -fx-text-fill: white;" />
+                                    </children>
+                                </VBox>
+                                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                                    <children>
+                                        <Label text="Book ID" textFill="#94a3b8" />
+                                        <TextField fx:id="txtRentalBookId" prefHeight="35.0" promptText="Enter ID" style="-fx-background-color: #0f172a; -fx-text-fill: white;" />
+                                    </children>
+                                </VBox>
+                                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                                    <children>
+                                        <Label text="Due Date" textFill="#94a3b8" />
+                                        <DatePicker fx:id="dtDueDate" prefHeight="35.0" style="-fx-background-color: #0f172a;" />
+                                    </children>
+                                </VBox>
+                                <VBox alignment="BOTTOM_CENTER">
+                                    <children>
+                                        <Button fx:id="btnIssueBook" onAction="#issueBookOnAction" prefHeight="35.0" prefWidth="150.0" style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8;" text="Issue Book" />
+                                    </children>
+                                </VBox>
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+
+                <VBox spacing="15.0" VBox.vgrow="ALWAYS">
+                    <children>
+                        <HBox alignment="CENTER_LEFT" spacing="20.0">
+                            <children>
+                                <Label text="Active Rentals" textFill="WHITE">
+                                    <font>
+                                        <Font name="System Bold" size="16.0" />
+                                    </font>
+                                </Label>
+                                <TextField fx:id="txtSearchRentals" prefHeight="30.0" prefWidth="250.0" promptText="Search Rental ID or Customer..." style="-fx-background-color: #1e293b; -fx-text-fill: white; -fx-border-color: #334155;" />
+                            </children>
+                        </HBox>
+                        <TableView fx:id="tblRentals" prefHeight="200.0" style="-fx-base: #1e293b; -fx-control-inner-background: #1e293b; -fx-background-color: #1e293b; -fx-table-cell-border-color: #334155; -fx-table-header-background-color: #0f172a; -fx-border-color: #334155; -fx-border-radius: 10; -fx-background-radius: 10;" VBox.vgrow="ALWAYS">
+                            <columns>
+                                <TableColumn fx:id="colRentalId" prefWidth="119.0" text="RID" />
+                                <TableColumn fx:id="colRentalBookId" prefWidth="108.0" text="Book ID" />
+                                <TableColumn fx:id="colRentalCustId" prefWidth="106.0" text="Cust ID" />
+                                <TableColumn fx:id="colIssueDate" prefWidth="166.0" text="Issue Date" />
+                                <TableColumn fx:id="colDueDate" prefWidth="173.0" text="Due Date" />
+                                <TableColumn fx:id="colStatus" prefWidth="114.0" text="Status" />
+                                <TableColumn fx:id="colFine" prefWidth="98.0" text="Fine" />
+                            </columns>
+                        </TableView>
+
+                        <HBox alignment="CENTER_RIGHT" spacing="15.0" style="-fx-padding: 10; -fx-background-color: #1e293b; -fx-background-radius: 10;">
+                            <children>
+                                <Label text="Mark as Returned:" textFill="#94a3b8" />
+                                <Button fx:id="btnReturnBook" onAction="#returnBookOnAction" prefHeight="35.0" prefWidth="120.0" style="-fx-background-color: #10b981; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8;" text="Return Book" />
+                                <Button fx:id="btnPayFine" onAction="#payfinebuttonaction" prefHeight="35.0" prefWidth="100.0" style="-fx-background-color: #f59e0b; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8;" text="Pay Fine" />
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>

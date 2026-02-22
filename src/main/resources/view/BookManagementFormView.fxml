@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="650.0" prefWidth="950.0" style="-fx-background-color: #0f172a;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.BookManagementController">
+    <children>
+        <VBox layoutX="30.0" layoutY="30.0" spacing="20.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="30.0">
+            <children>
+                <HBox alignment="CENTER_LEFT" spacing="20.0">
+                    <children>
+                        <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                            <children>
+                                <Label text="Book Management" textFill="WHITE">
+                                    <font>
+                                        <Font name="Segoe UI Bold" size="24.0" />
+                                    </font>
+                                </Label>
+                                <Label text="Manage library inventory ." textFill="#94a3b8" />
+                            </children>
+                        </VBox>
+                        <TextField fx:id="txtSearch" prefHeight="40.0" prefWidth="300.0" promptText="Search by Title, ID, Author, or Category..." style="-fx-background-color: #1e293b; -fx-text-fill: white; -fx-background-radius: 8; -fx-border-color: #334155; -fx-border-radius: 8;" />
+                    </children>
+                </HBox>
+
+                <HBox spacing="25.0" VBox.vgrow="ALWAYS">
+                    <children>
+                        <VBox prefWidth="300.0" spacing="12.0" style="-fx-background-color: #1e293b; -fx-padding: 20; -fx-background-radius: 15;">
+                            <children>
+                                <Label text="Book Details" textFill="WHITE">
+                                    <font>
+                                        <Font name="System Bold" size="16.0" />
+                                    </font>
+                                </Label>
+                                <VBox spacing="5.0">
+                                    <children>
+                                        <Label text="Book ID" textFill="#94a3b8" />
+                                        <HBox alignment="CENTER_LEFT" spacing="8.0">
+                                            <children>
+                                                <TextField fx:id="txtId" editable="false" prefHeight="35.0" promptText="Auto-Generated" style="-fx-background-color: #0f172a; -fx-text-fill: #64748b; -fx-border-color: #334155; -fx-border-radius: 5;" HBox.hgrow="ALWAYS" />
+                                                <Button onAction="#clearIdOnAction" prefHeight="35.0" prefWidth="40.0" style="-fx-background-color: #10b981; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-cursor: hand;" text="↺" />
+                                            </children>
+                                        </HBox>
+                                    </children>
+                                </VBox>
+                                <VBox spacing="5.0">
+                                    <children>
+                                        <Label text="Title" textFill="#94a3b8" />
+                                        <TextField fx:id="txtTitle" prefHeight="35.0" style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-border-color: #334155; -fx-border-radius: 5;" />
+                                    </children>
+                                </VBox>
+                                <VBox spacing="5.0">
+                                    <children>
+                                        <Label text="Author" textFill="#94a3b8" />
+                                        <TextField fx:id="txtAuthor" prefHeight="35.0" style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-border-color: #334155; -fx-border-radius: 5;" />
+                                    </children>
+                                </VBox>
+                                <VBox spacing="5.0">
+                                    <children>
+                                        <Label text="Category" textFill="#94a3b8" />
+                                        <TextField fx:id="txtCategory" prefHeight="35.0" style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-border-color: #334155; -fx-border-radius: 5;" />
+                                    </children>
+                                </VBox>
+                                <VBox spacing="5.0">
+                                    <children>
+                                        <Label text="Quantity" textFill="#94a3b8" />
+                                        <TextField fx:id="txtQty" prefHeight="35.0" style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-border-color: #334155; -fx-border-radius: 5;" />
+                                    </children>
+                                </VBox>
+
+                                <VBox spacing="15.0" style="-fx-padding: 10 0 0 0;">
+                                    <children>
+                                        <Button fx:id="btnSave" maxWidth="Infinity" onAction="#saveBookOnAction" prefHeight="40.0" style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8;" text="Save Book" />
+                                        <HBox spacing="10.0">
+                                            <children>
+                                                <Button fx:id="btnUpdate" maxWidth="Infinity" onAction="#updateBookOnAction" prefHeight="35.0" style="-fx-background-color: #10b981; -fx-text-fill: white; -fx-background-radius: 8;" text="Update" HBox.hgrow="ALWAYS" />
+                                                <Button fx:id="btnDelete" maxWidth="Infinity" onAction="#deleteBookOnAction" prefHeight="35.0" style="-fx-background-color: #ef4444; -fx-text-fill: white; -fx-background-radius: 8;" text="Delete" HBox.hgrow="ALWAYS" />
+                                            </children>
+                                        </HBox>
+                                    </children>
+                                </VBox>
+                            </children>
+                        </VBox>
+
+                        <TableView fx:id="tblBooks" prefHeight="200.0" prefWidth="200.0" style="-fx-base: #1e293b; -fx-control-inner-background: #1e293b; -fx-background-color: #1e293b; -fx-table-cell-border-color: #334155; -fx-table-header-background-color: #0f172a; -fx-border-color: #334155; -fx-border-radius: 10; -fx-background-radius: 10;" HBox.hgrow="ALWAYS">
+                            <columns>
+                                <TableColumn fx:id="colId" prefWidth="60.0" text="ID" />
+                                <TableColumn fx:id="colTitle" prefWidth="157.0" text="Title" />
+                                <TableColumn fx:id="colAuthor" prefWidth="162.0" text="Author" />
+                                <TableColumn fx:id="colCategory" minWidth="0.0" prefWidth="110.0" text="Category" />
+                                <TableColumn fx:id="colQty" prefWidth="70.0" text="Qty" />
+                            </columns>
+                        </TableView>
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>
