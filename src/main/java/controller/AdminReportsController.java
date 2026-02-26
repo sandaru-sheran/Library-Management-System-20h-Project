@@ -5,16 +5,23 @@ import db.DBConnection;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.chart.PieChart;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Text;
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.xml.JRXmlLoader;
+import net.sf.jasperreports.view.JasperViewer;
 
+import java.io.InputStream;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -76,6 +83,37 @@ public class AdminReportsController implements Initializable {
         }
     }
 
+    @FXML
+    void exportReportOnAction(ActionEvent event) {
+        try {
+            // 1. Establish Database Connection
+            Connection connection = DBConnection.getInstance().getConnection();
+
+            // 2. Load the compiled report or source jrxml
+            // Ensure "RentalReport.jrxml" is in src/view/reports/
+            InputStream reportStream = getClass().getResourceAsStream("/view/reports/RentalReport.jrxml");
+
+            if (reportStream == null) {
+                new Alert(Alert.AlertType.ERROR, "Report file not found! Check path: /view/reports/RentalReport.jrxml").show();
+                return;
+            }
+
+            // 3. Compile the Report
+            JasperDesign jasperDesign = JRXmlLoader.load(reportStream);
+            JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
+
+            // 4. Fill the Report with Data (No parameters needed for this full report)
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, null, connection);
+
+            // 5. View the Report
+            // false = close only the report window, not the whole app
+            JasperViewer.viewReport(jasperPrint, false);
+
+        } catch (JRException | SQLException e) {
+            e.printStackTrace();
+            new Alert(Alert.AlertType.ERROR, "Failed to generate report: " + e.getMessage()).show();
+        }
+    }
     private void loadPieChartData() {
         ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
         try {
@@ -142,4 +180,5 @@ public class AdminReportsController implements Initializable {
             e.printStackTrace();
         }
     }
+
 }
