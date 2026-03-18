@@ -1,7 +1,7 @@
 package controller;
-
-import Model.CustomerTM;
-import db.DBConnection;
+import model.CustomerTM;
+import service.MemberManagementService;
+import service.impl.MemberManagementServiceImpl;
 import javafx.animation.PauseTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,11 +19,7 @@ import javafx.stage.Popup;
 import javafx.util.Duration;
 
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ResourceBundle;
 
 public class MemberManagementController implements Initializable {
@@ -35,51 +31,41 @@ public class MemberManagementController implements Initializable {
     @FXML private TextField txtCustContact;
     @FXML private TextField txtCustEmail;
 
-    @FXML private Button btnSaveCust;
-    @FXML private Button btnUpdateCust;
-    @FXML private Button btnDeleteCust;
-
     @FXML private TableView<CustomerTM> tblCustomers;
     @FXML private TableColumn<CustomerTM, String> colCustId;
     @FXML private TableColumn<CustomerTM, String> colCustName;
     @FXML private TableColumn<CustomerTM, String> colCustContact;
 
+    private MemberManagementService memberManagementService;
     private final ObservableList<CustomerTM> customerList = FXCollections.observableArrayList();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // 1. Map Table Columns
-        // Note: Changed "id" to "custId" to match the getCustId() method in your Model
+        memberManagementService = new MemberManagementServiceImpl();
         colCustId.setCellValueFactory(new PropertyValueFactory<>("custId"));
         colCustName.setCellValueFactory(new PropertyValueFactory<>("name"));
         colCustContact.setCellValueFactory(new PropertyValueFactory<>("contact"));
 
-        // 2. Lock the Customer ID field
         txtCustId.setEditable(false);
         txtCustId.setStyle("-fx-text-fill: #94a3b8; -fx-background-color: #0f172a;");
 
-        // 3. Load Initial Data & Generate ID
         loadAllCustomers();
         generateNewCustId();
 
-        // 4. Listen for table selection
         tblCustomers.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 fillFields(newSelection);
             }
         });
 
-        // 5. SEARCH BAR LOGIC
         FilteredList<CustomerTM> filteredData = new FilteredList<>(customerList, c -> true);
         txtSearchCustomer.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(customer -> {
                 if (newValue == null || newValue.isEmpty()) return true;
-
                 String lowerCaseFilter = newValue.toLowerCase();
                 if (customer.getName().toLowerCase().contains(lowerCaseFilter)) return true;
                 if (customer.getCustId().toLowerCase().contains(lowerCaseFilter)) return true;
                 if (customer.getContact().toLowerCase().contains(lowerCaseFilter)) return true;
-
                 return false;
             });
         });
@@ -90,21 +76,8 @@ public class MemberManagementController implements Initializable {
     }
 
     private void loadAllCustomers() {
-        customerList.clear();
         try {
-            Connection connection = DBConnection.getInstance().getConnection();
-            Statement stm = connection.createStatement();
-            ResultSet rs = stm.executeQuery("SELECT * FROM Customers");
-
-            while (rs.next()) {
-                customerList.add(new CustomerTM(
-                        rs.getString("cust_id"),
-                        rs.getString("name"),
-                        rs.getString("address"),
-                        rs.getString("contact"),
-                        rs.getString("email")
-                ));
-            }
+            customerList.setAll(memberManagementService.getAllCustomers());
         } catch (SQLException e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Database Error", "Failed to load customers.");
@@ -135,16 +108,7 @@ public class MemberManagementController implements Initializable {
 
     private void generateNewCustId() {
         try {
-            Connection connection = DBConnection.getInstance().getConnection();
-            ResultSet rs = connection.createStatement().executeQuery("SELECT cust_id FROM Customers ORDER BY cust_id DESC LIMIT 1");
-
-            if (rs.next()) {
-                String lastId = rs.getString("cust_id"); // e.g., "C002"
-                int idNum = Integer.parseInt(lastId.substring(1)) + 1;
-                txtCustId.setText(String.format("C%03d", idNum));
-            } else {
-                txtCustId.setText("C001");
-            }
+            txtCustId.setText(memberManagementService.getNextCustomerId());
         } catch (SQLException e) {
             e.printStackTrace();
             txtCustId.setText("C001");
@@ -153,35 +117,14 @@ public class MemberManagementController implements Initializable {
 
     @FXML
     void saveCustomerOnAction(ActionEvent event) {
-        String id = txtCustId.getText();
-        String name = txtCustName.getText();
-        String address = txtCustAddress.getText();
-        String contact = txtCustContact.getText();
-        String email = txtCustEmail.getText();
-
-        if (name.isEmpty() || contact.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Missing Data", "Name and Contact are required.");
-            return;
-        }
-
         try {
-            Connection connection = DBConnection.getInstance().getConnection();
-            String sql = "INSERT INTO Customers (cust_id, name, address, contact, email) VALUES (?, ?, ?, ?, ?)";
-            PreparedStatement pstm = connection.prepareStatement(sql);
-            pstm.setString(1, id);
-            pstm.setString(2, name);
-            pstm.setString(3, address);
-            pstm.setString(4, contact);
-            pstm.setString(5, email);
-
-            if (pstm.executeUpdate() > 0) {
-                showAlert(Alert.AlertType.INFORMATION, "Success", "Customer registered successfully!");
-                loadAllCustomers();
-                clearFields();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Database Error", "Failed to save the customer.");
+            CustomerTM customer = new CustomerTM(txtCustId.getText(), txtCustName.getText(), txtCustAddress.getText(), txtCustContact.getText(), txtCustEmail.getText());
+            memberManagementService.saveCustomer(customer);
+            showAlert(Alert.AlertType.INFORMATION, "Success", "Customer registered successfully!");
+            loadAllCustomers();
+            clearFields();
+        } catch (IllegalArgumentException | SQLException e) {
+            showAlert(Alert.AlertType.ERROR, "Error", e.getMessage());
         }
     }
 
@@ -194,23 +137,13 @@ public class MemberManagementController implements Initializable {
         }
 
         try {
-            Connection connection = DBConnection.getInstance().getConnection();
-            String sql = "UPDATE Customers SET name=?, address=?, contact=?, email=? WHERE cust_id=?";
-            PreparedStatement pstm = connection.prepareStatement(sql);
-            pstm.setString(1, txtCustName.getText());
-            pstm.setString(2, txtCustAddress.getText());
-            pstm.setString(3, txtCustContact.getText());
-            pstm.setString(4, txtCustEmail.getText());
-            pstm.setString(5, txtCustId.getText());
-
-            if (pstm.executeUpdate() > 0) {
-                showAlert(Alert.AlertType.INFORMATION, "Success", "Customer updated successfully!");
-                loadAllCustomers();
-                clearFields();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Update Error", "Could not update customer.");
+            CustomerTM customer = new CustomerTM(txtCustId.getText(), txtCustName.getText(), txtCustAddress.getText(), txtCustContact.getText(), txtCustEmail.getText());
+            memberManagementService.updateCustomer(customer);
+            showAlert(Alert.AlertType.INFORMATION, "Success", "Customer updated successfully!");
+            loadAllCustomers();
+            clearFields();
+        } catch (IllegalArgumentException | SQLException e) {
+            showAlert(Alert.AlertType.ERROR, "Update Error", e.getMessage());
         }
     }
 
@@ -229,15 +162,10 @@ public class MemberManagementController implements Initializable {
 
         if (confirm) {
             try {
-                Connection connection = DBConnection.getInstance().getConnection();
-                PreparedStatement pstm = connection.prepareStatement("DELETE FROM Customers WHERE cust_id=?");
-                pstm.setString(1, selectedCust.getCustId());
-
-                if (pstm.executeUpdate() > 0) {
-                    showAlert(Alert.AlertType.INFORMATION, "Deleted", "Customer has been removed.");
-                    loadAllCustomers();
-                    clearFields();
-                }
+                memberManagementService.deleteCustomer(selectedCust.getCustId());
+                showAlert(Alert.AlertType.INFORMATION, "Deleted", "Customer has been removed.");
+                loadAllCustomers();
+                clearFields();
             } catch (SQLException e) {
                 e.printStackTrace();
                 showAlert(Alert.AlertType.ERROR, "Deletion Failed", "Cannot delete a customer with active rentals.");
@@ -245,16 +173,15 @@ public class MemberManagementController implements Initializable {
         }
     }
 
-    // --- CUSTOM DARK NOTIFICATION UI ---
     private void showAlert(Alert.AlertType alertType, String title, String message) {
-        String accentColor = "#10b981"; // Success Green
+        String accentColor = "#10b981";
         String symbol = "✔";
 
         if (alertType == Alert.AlertType.ERROR) {
-            accentColor = "#ef4444"; // Red
+            accentColor = "#ef4444";
             symbol = "✖";
         } else if (alertType == Alert.AlertType.WARNING) {
-            accentColor = "#f59e0b"; // Yellow
+            accentColor = "#f59e0b";
             symbol = "⚠";
         }
 
@@ -299,7 +226,6 @@ public class MemberManagementController implements Initializable {
         delay.play();
     }
 
-    // --- CUSTOM DARK CONFIRMATION MODAL ---
     private boolean showDarkConfirmation(String title, String message) {
         javafx.stage.Stage dialogStage = new javafx.stage.Stage();
         dialogStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);

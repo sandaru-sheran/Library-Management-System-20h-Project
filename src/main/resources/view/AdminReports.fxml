@@ -10,8 +10,12 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import java.net.URL?>
 
-<AnchorPane prefHeight="650.0" prefWidth="950.0" style="-fx-background-color: #0f172a;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AdminReportsController">
+<AnchorPane prefHeight="650.0" prefWidth="950.0" styleClass="main-pane" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sanda.librarymanagement.controller.AdminReportsController">
+    <stylesheets>
+        <URL value="@css/style.css" />
+    </stylesheets>
     <children>
         <VBox layoutX="30.0" layoutY="30.0" spacing="25.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="30.0">
             <children>
@@ -19,47 +23,47 @@
                     <children>
                         <VBox spacing="5.0" HBox.hgrow="ALWAYS">
                             <children>
-                                <Label text="System Analytics &amp; Reports" textFill="WHITE">
+                                <Label styleClass="report-title" text="System Analytics &amp; Reports">
                                     <font>
                                         <Font name="Segoe UI Bold" size="24.0" />
                                     </font>
                                 </Label>
-                                <Label text="Visual data summaries and financial reports for the library system." textFill="#94a3b8" />
+                                <Label styleClass="report-subtitle" text="Visual data summaries and financial reports for the library system." />
                             </children>
                         </VBox>
-                        <Button mnemonicParsing="false" onAction="#exportReportOnAction" prefHeight="40.0" prefWidth="160.0" style="-fx-background-color: #a855f7; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand;" text="Export Full Report" />
+                        <Button mnemonicParsing="false" onAction="#exportReportOnAction" prefHeight="40.0" prefWidth="160.0" styleClass="export-button" text="Export Full Report" />
                     </children>
                 </HBox>
 
                 <HBox spacing="20.0">
                     <children>
-                        <VBox prefHeight="100.0" prefWidth="280.0" style="-fx-background-color: #1e293b; -fx-background-radius: 12; -fx-padding: 15; -fx-border-color: #334155; -fx-border-radius: 12;">
+                        <VBox prefHeight="100.0" prefWidth="280.0" styleClass="metric-box">
                             <children>
-                                <Label text="Total Revenue (Fines)" textFill="#94a3b8" />
+                                <Label styleClass="metric-label" text="Total Revenue (Fines)" />
                                 <Region VBox.vgrow="ALWAYS" />
-                                <Label fx:id="lblTotalRevenue" text="0.00 LKR" textFill="#10b981">
+                                <Label fx:id="lblTotalRevenue" styleClass="metric-value-green" text="0.00 LKR">
                                     <font>
                                         <Font name="System Bold" size="24.0" />
                                     </font>
                                 </Label>
                             </children>
                         </VBox>
-                        <VBox prefHeight="100.0" prefWidth="280.0" style="-fx-background-color: #1e293b; -fx-background-radius: 12; -fx-padding: 15; -fx-border-color: #334155; -fx-border-radius: 12;">
+                        <VBox prefHeight="100.0" prefWidth="280.0" styleClass="metric-box">
                             <children>
-                                <Label text="Outstanding Fines" textFill="#94a3b8" />
+                                <Label styleClass="metric-label" text="Outstanding Fines" />
                                 <Region VBox.vgrow="ALWAYS" />
-                                <Label fx:id="lblOutstandingFines" text="0.00 LKR" textFill="#ef4444">
+                                <Label fx:id="lblOutstandingFines" styleClass="metric-value-red" text="0.00 LKR">
                                     <font>
                                         <Font name="System Bold" size="24.0" />
                                     </font>
                                 </Label>
                             </children>
                         </VBox>
-                        <VBox prefHeight="100.0" prefWidth="280.0" style="-fx-background-color: #1e293b; -fx-background-radius: 12; -fx-padding: 15; -fx-border-color: #334155; -fx-border-radius: 12;">
+                        <VBox prefHeight="100.0" prefWidth="280.0" styleClass="metric-box">
                             <children>
-                                <Label text="Total Active Rentals" textFill="#94a3b8" />
+                                <Label styleClass="metric-label" text="Total Active Rentals" />
                                 <Region VBox.vgrow="ALWAYS" />
-                                <Label fx:id="lblActiveRentals" text="0" textFill="#3b82f6">
+                                <Label fx:id="lblActiveRentals" styleClass="metric-value-blue" text="0">
                                     <font>
                                         <Font name="System Bold" size="24.0" />
                                     </font>
@@ -71,9 +75,9 @@
 
                 <HBox spacing="25.0" VBox.vgrow="ALWAYS">
                     <children>
-                        <VBox prefWidth="400.0" spacing="15.0" style="-fx-background-color: #1e293b; -fx-padding: 20; -fx-background-radius: 15;">
+                        <VBox prefWidth="400.0" spacing="15.0" styleClass="chart-box">
                             <children>
-                                <Label text="Inventory Distribution" textFill="WHITE">
+                                <Label styleClass="chart-title" text="Inventory Distribution">
                                     <font>
                                         <Font name="System Bold" size="16.0" />
                                     </font>
@@ -82,14 +86,14 @@
                             </children>
                         </VBox>
 
-                        <VBox spacing="15.0" style="-fx-background-color: #1e293b; -fx-padding: 20; -fx-background-radius: 15;" HBox.hgrow="ALWAYS">
+                        <VBox spacing="15.0" styleClass="chart-box" HBox.hgrow="ALWAYS">
                             <children>
-                                <Label text="Most Popular Books" textFill="WHITE">
+                                <Label styleClass="chart-title" text="Most Popular Books">
                                     <font>
                                         <Font name="System Bold" size="16.0" />
                                     </font>
                                 </Label>
-                                <TableView fx:id="tblPopularBooks" prefHeight="200.0" style="-fx-base: #1e293b; -fx-control-inner-background: #1e293b; -fx-background-color: #1e293b; -fx-table-cell-border-color: #334155; -fx-table-header-background-color: #0f172a;" VBox.vgrow="ALWAYS">
+                                <TableView fx:id="tblPopularBooks" prefHeight="200.0" styleClass="table-view" VBox.vgrow="ALWAYS">
                                     <columns>
                                         <TableColumn fx:id="colRankBookTitle" prefWidth="200.0" text="Book Title" />
                                         <TableColumn fx:id="colRankCategory" prefWidth="120.0" text="Category" />

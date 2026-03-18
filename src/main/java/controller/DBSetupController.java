@@ -1,6 +1,7 @@
 package controller;
 
-import db.DBConnection;
+import factory.ServiceFactory;
+import service.DBSetupService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -23,6 +24,12 @@ public class DBSetupController {
     @FXML private PasswordField txtDbPass;
     @FXML private Label lblStatus;
 
+    private DBSetupService dbSetupService;
+
+    public void initialize() {
+        dbSetupService = ServiceFactory.getInstance().getService(DBSetupService.class);
+    }
+
     @FXML
     void testAndConnectOnAction(ActionEvent event) {
         lblStatus.setText("Attempting to connect...");
@@ -40,10 +47,7 @@ public class DBSetupController {
         }
 
         try {
-            // Send new credentials to DBConnection
-            DBConnection.updateCredentials(host, port, dbName, user, pass);
-
-            // If we reach here, connection was successful! Go back to login.
+            dbSetupService.testAndConnect(host, port, dbName, user, pass);
             navigateToLogin(event);
 
         } catch (SQLException e) {

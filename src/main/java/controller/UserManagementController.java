@@ -1,9 +1,9 @@
 package controller;
 
-import Model.UserTM;
-import db.DBConnection; // Your database gateway
+import dto.UserDTO;
+import service.UserService;
+import service.impl.UserServiceImpl;
 import javafx.animation.PauseTransition;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -18,9 +18,6 @@ import javafx.stage.Popup;
 import javafx.util.Duration;
 
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
 
@@ -32,68 +29,39 @@ public class UserManagementController implements Initializable {
     @FXML private TextField txtPassword;
     @FXML private ComboBox<String> cmbRole;
 
-    @FXML private Button btnSaveUser;
-    @FXML private Button btnUpdateUser;
-    @FXML private Button btnDeleteUser;
+    @FXML private TableView<UserDTO> tblUsers;
+    @FXML private TableColumn<UserDTO, String> colUserId;
+    @FXML private TableColumn<UserDTO, String> colUsername;
+    @FXML private TableColumn<UserDTO, String> colRole;
 
-    @FXML private TableView<UserTM> tblUsers;
-    @FXML private TableColumn<UserTM, String> colUserId;
-    @FXML private TableColumn<UserTM, String> colUsername;
-    @FXML private TableColumn<UserTM, String> colRole;
-
-    private final ObservableList<UserTM> userList = FXCollections.observableArrayList();
+    private UserService userService;
+    private final ObservableList<UserDTO> userList = FXCollections.observableArrayList();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // 1. Map Table Columns
+        userService = new UserServiceImpl();
         colUserId.setCellValueFactory(new PropertyValueFactory<>("userId"));
         colUsername.setCellValueFactory(new PropertyValueFactory<>("username"));
         colRole.setCellValueFactory(new PropertyValueFactory<>("role"));
 
-        // 2. Add roles to ComboBox
         cmbRole.setItems(FXCollections.observableArrayList("Admin", "Librarian"));
 
-        // 3. Listen for table selection
         tblUsers.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
                 fillFields(newVal);
             }
         });
 
-        // 4. Lock the User ID field and generate the first ID
         txtUserId.setEditable(false);
         txtUserId.setStyle("-fx-text-fill: #94a3b8; -fx-background-color: #0f172a;");
         generateNewUserId();
 
-        // 5. Load table data
         loadAllUsers();
-
-        // 6. FORCE the floating notification to use your dark theme CSS
-        Platform.runLater(() -> {
-            try {
-                String css = getClass().getResource("/view/css/style.css").toExternalForm();
-                tblUsers.getScene().getStylesheets().add(css);
-            } catch (Exception e) {
-                System.err.println("Could not load CSS for notifications.");
-            }
-        });
     }
 
     private void loadAllUsers() {
-        userList.clear();
         try {
-            Connection connection = DBConnection.getInstance().getConnection();
-            PreparedStatement pstm = connection.prepareStatement("SELECT * FROM Users");
-            ResultSet resultSet = pstm.executeQuery();
-
-            while (resultSet.next()) {
-                userList.add(new UserTM(
-                        resultSet.getString("user_id"),
-                        resultSet.getString("username"),
-                        resultSet.getString("password"),
-                        resultSet.getString("role")
-                ));
-            }
+            userList.setAll(userService.getAllUsers());
             tblUsers.setItems(userList);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -101,7 +69,7 @@ public class UserManagementController implements Initializable {
         }
     }
 
-    private void fillFields(UserTM user) {
+    private void fillFields(UserDTO user) {
         txtUserId.setText(user.getUserId());
         txtUsername.setText(user.getUsername());
         txtPassword.setText(user.getPassword());
@@ -123,123 +91,64 @@ public class UserManagementController implements Initializable {
         String password = txtPassword.getText();
         String role = cmbRole.getValue();
 
-        if (userId.isEmpty() || username.isEmpty() || password.isEmpty() || role == null) {
-            showAlert(Alert.AlertType.WARNING, "Missing Data", "Please fill in all fields before saving.");
-            return;
-        }
-
-        if (username.length() <= 3) {
-            showAlert(Alert.AlertType.WARNING, "Invalid Username", "Username must be longer than 3 characters.");
-            return;
-        }
-
-        if (!username.matches("^[A-Za-z].*")) {
-            showAlert(Alert.AlertType.WARNING, "Invalid Username", "Username must start with a letter.");
-            return;
-        }
-
-        if (password.length() < 8) {
-            showAlert(Alert.AlertType.WARNING, "Weak Password", "Password must be at least 8 characters long.");
-            return;
-        }
-
         try {
-            Connection connection = DBConnection.getInstance().getConnection();
-            String sql = "INSERT INTO Users (user_id, username, password, role) VALUES (?, ?, ?, ?)";
-            PreparedStatement pstm = connection.prepareStatement(sql);
-            pstm.setString(1, userId);
-            pstm.setString(2, username);
-            pstm.setString(3, password);
-            pstm.setString(4, role);
-
-            int affectedRows = pstm.executeUpdate();
-            if (affectedRows > 0) {
-                showAlert(Alert.AlertType.INFORMATION, "Success", "User " + username + " registered successfully!");
-                loadAllUsers();
-                clearFields();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Database Error", "User ID or Username already exists.");
+            UserDTO user = new UserDTO(userId, username, password, role);
+            userService.saveUser(user);
+            showAlert(Alert.AlertType.INFORMATION, "Success", "User " + username + " registered successfully!");
+            loadAllUsers();
+            clearFields();
+        } catch (IllegalArgumentException | SQLException e) {
+            showAlert(Alert.AlertType.ERROR, "Error", e.getMessage());
         }
     }
 
     @FXML
     void updateUserOnAction(ActionEvent event) {
-        UserTM selectedUser = tblUsers.getSelectionModel().getSelectedItem();
+        UserDTO selectedUser = tblUsers.getSelectionModel().getSelectedItem();
         if (selectedUser == null) {
             showAlert(Alert.AlertType.WARNING, "Selection Error", "Please select a user from the table to update.");
             return;
         }
 
         try {
-            Connection connection = DBConnection.getInstance().getConnection();
-            String sql = "UPDATE Users SET username = ?, password = ?, role = ? WHERE user_id = ?";
-            PreparedStatement pstm = connection.prepareStatement(sql);
-            pstm.setString(1, txtUsername.getText());
-            pstm.setString(2, txtPassword.getText());
-            pstm.setString(3, cmbRole.getValue());
-            pstm.setString(4, txtUserId.getText());
-
-            int affectedRows = pstm.executeUpdate();
-            if (affectedRows > 0) {
-                showAlert(Alert.AlertType.INFORMATION, "Success", "User updated successfully!");
-                loadAllUsers();
-                clearFields();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Update Error", "Could not update user.");
+            UserDTO user = new UserDTO(txtUserId.getText(), txtUsername.getText(), txtPassword.getText(), cmbRole.getValue());
+            userService.updateUser(user);
+            showAlert(Alert.AlertType.INFORMATION, "Success", "User updated successfully!");
+            loadAllUsers();
+            clearFields();
+        } catch (IllegalArgumentException | SQLException e) {
+            showAlert(Alert.AlertType.ERROR, "Update Error", e.getMessage());
         }
     }
 
     private void generateNewUserId() {
         try {
-            Connection connection = DBConnection.getInstance().getConnection();
-            ResultSet rs = connection.createStatement().executeQuery("SELECT user_id FROM Users ORDER BY user_id DESC LIMIT 1");
-
-            if (rs.next()) {
-                String lastId = rs.getString("user_id");
-                int idNum = Integer.parseInt(lastId.substring(1)) + 1;
-                txtUserId.setText(String.format("U%03d", idNum));
-            } else {
-                txtUserId.setText("U001");
-            }
+            txtUserId.setText(userService.getNextAvailableUserId());
         } catch (SQLException e) {
             e.printStackTrace();
             txtUserId.setText("U001");
         }
     }
 
-    // --- NEW: THE DARK DELETION ACTION ---
     @FXML
     void deleteUserOnAction(ActionEvent event) {
-        UserTM selectedUser = tblUsers.getSelectionModel().getSelectedItem();
+        UserDTO selectedUser = tblUsers.getSelectionModel().getSelectedItem();
         if (selectedUser == null) {
             showAlert(Alert.AlertType.WARNING, "Selection Error", "Please select a user from the table to delete.");
             return;
         }
 
-        // 1. Trigger the dark modal
         boolean confirm = showDarkConfirmation(
                 "Confirm Deletion",
                 "Are you sure you want to permanently delete user '" + selectedUser.getUsername() + "'?"
         );
 
-        // 2. Only execute if they clicked "Yes"
         if (confirm) {
             try {
-                Connection connection = DBConnection.getInstance().getConnection();
-                String sql = "DELETE FROM Users WHERE user_id = ?";
-                PreparedStatement pstm = connection.prepareStatement(sql);
-                pstm.setString(1, selectedUser.getUserId());
-
-                int affectedRows = pstm.executeUpdate();
-                if (affectedRows > 0) {
-                    showAlert(Alert.AlertType.INFORMATION, "Success", "User deleted successfully!");
-                    loadAllUsers();
-                    clearFields();
-                }
+                userService.deleteUser(selectedUser.getUserId());
+                showAlert(Alert.AlertType.INFORMATION, "Success", "User deleted successfully!");
+                loadAllUsers();
+                clearFields();
             } catch (SQLException e) {
                 e.printStackTrace();
                 showAlert(Alert.AlertType.ERROR, "Delete Error", "Could not delete user.");
@@ -247,7 +156,6 @@ public class UserManagementController implements Initializable {
         }
     }
 
-    // --- NEW: THE CUSTOM DARK CONFIRMATION MODAL ---
     private boolean showDarkConfirmation(String title, String message) {
         javafx.stage.Stage dialogStage = new javafx.stage.Stage();
         dialogStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
@@ -298,7 +206,6 @@ public class UserManagementController implements Initializable {
         scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
         dialogStage.setScene(scene);
 
-        // Center it relative to the main window
         javafx.stage.Window mainWindow = tblUsers.getScene().getWindow();
         dialogStage.setX(mainWindow.getX() + (mainWindow.getWidth() / 2) - 175);
         dialogStage.setY(mainWindow.getY() + (mainWindow.getHeight() / 2) - 90);

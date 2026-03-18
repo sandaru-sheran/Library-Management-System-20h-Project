@@ -1,7 +1,7 @@
 package controller;
-
-import Model.BookTM;
-import db.DBConnection;
+import factory.ServiceFactory;
+import model.BookTM;
+import service.BookService;
 import javafx.animation.PauseTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,12 +19,7 @@ import javafx.stage.Popup;
 import javafx.util.Duration;
 
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class BookManagementController implements Initializable {
@@ -36,10 +31,6 @@ public class BookManagementController implements Initializable {
     @FXML private TextField txtCategory;
     @FXML private TextField txtQty;
 
-    @FXML private Button btnSave;
-    @FXML private Button btnUpdate;
-    @FXML private Button btnDelete;
-
     @FXML private TableView<BookTM> tblBooks;
     @FXML private TableColumn<BookTM, String> colId;
     @FXML private TableColumn<BookTM, String> colTitle;
@@ -47,44 +38,39 @@ public class BookManagementController implements Initializable {
     @FXML private TableColumn<BookTM, String> colCategory;
     @FXML private TableColumn<BookTM, Integer> colQty;
 
+    private BookService bookService;
     private final ObservableList<BookTM> bookList = FXCollections.observableArrayList();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // 1. Initialize Table Columns
+        bookService = ServiceFactory.getInstance().getService(BookService.class);
         colId.setCellValueFactory(new PropertyValueFactory<>("bookId"));
         colTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
         colAuthor.setCellValueFactory(new PropertyValueFactory<>("author"));
         colCategory.setCellValueFactory(new PropertyValueFactory<>("category"));
         colQty.setCellValueFactory(new PropertyValueFactory<>("qty"));
 
-        // 2. Lock the Book ID field
         txtId.setEditable(false);
         txtId.setStyle("-fx-text-fill: #94a3b8; -fx-background-color: #0f172a;");
 
-        // 3. Load Initial Data & Generate ID
         loadAllBooks();
         generateNextBookId();
 
-        // 4. Listen for table selection
         tblBooks.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 fillFields(newSelection);
             }
         });
 
-        // 5. SEARCH BAR LOGIC
         FilteredList<BookTM> filteredData = new FilteredList<>(bookList, b -> true);
         txtSearch.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(book -> {
                 if (newValue == null || newValue.isEmpty()) return true;
-
                 String lowerCaseFilter = newValue.toLowerCase();
                 if (book.getTitle().toLowerCase().contains(lowerCaseFilter)) return true;
                 if (book.getAuthor().toLowerCase().contains(lowerCaseFilter)) return true;
                 if (book.getBookId().toLowerCase().contains(lowerCaseFilter)) return true;
                 if (book.getCategory().toLowerCase().contains(lowerCaseFilter)) return true;
-
                 return false;
             });
         });
@@ -95,21 +81,8 @@ public class BookManagementController implements Initializable {
     }
 
     private void loadAllBooks() {
-        bookList.clear();
         try {
-            Connection connection = DBConnection.getInstance().getConnection();
-            Statement stm = connection.createStatement();
-            ResultSet rs = stm.executeQuery("SELECT * FROM Books");
-
-            while (rs.next()) {
-                bookList.add(new BookTM(
-                        rs.getString("book_id"),
-                        rs.getString("title"),
-                        rs.getString("author"),
-                        rs.getString("category"),
-                        rs.getInt("qty")
-                ));
-            }
+            bookList.setAll(bookService.getAllBooks());
         } catch (SQLException e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Database Error", "Failed to load books.");
@@ -140,16 +113,7 @@ public class BookManagementController implements Initializable {
 
     private void generateNextBookId() {
         try {
-            Connection connection = DBConnection.getInstance().getConnection();
-            ResultSet rs = connection.createStatement().executeQuery("SELECT book_id FROM Books ORDER BY book_id DESC LIMIT 1");
-
-            if (rs.next()) {
-                String lastId = rs.getString("book_id");
-                int idNum = Integer.parseInt(lastId.substring(1)) + 1;
-                txtId.setText(String.format("B%03d", idNum));
-            } else {
-                txtId.setText("B001");
-            }
+            txtId.setText(bookService.getNextBookId());
         } catch (SQLException e) {
             e.printStackTrace();
             txtId.setText("B001");
@@ -158,43 +122,17 @@ public class BookManagementController implements Initializable {
 
     @FXML
     void saveBookOnAction(ActionEvent event) {
-        String id = txtId.getText();
-        String title = txtTitle.getText();
-        String author = txtAuthor.getText();
-        String category = txtCategory.getText();
-        String qtyText = txtQty.getText();
-
-        if (title.isEmpty() || author.isEmpty() || category.isEmpty() || qtyText.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Missing Data", "Please fill in all book details.");
-            return;
-        }
-
         try {
-            int qty = Integer.parseInt(qtyText);
-            if (qty < 0) {
-                showAlert(Alert.AlertType.WARNING, "Invalid Quantity", "Quantity cannot be negative.");
-                return;
-            }
-
-            Connection connection = DBConnection.getInstance().getConnection();
-            String sql = "INSERT INTO Books (book_id, title, author, category, qty) VALUES (?, ?, ?, ?, ?)";
-            PreparedStatement pstm = connection.prepareStatement(sql);
-            pstm.setString(1, id);
-            pstm.setString(2, title);
-            pstm.setString(3, author);
-            pstm.setString(4, category);
-            pstm.setInt(5, qty);
-
-            if (pstm.executeUpdate() > 0) {
-                showAlert(Alert.AlertType.INFORMATION, "Success", "Book saved successfully!");
-                loadAllBooks();
-                clearFields();
-            }
+            int qty = Integer.parseInt(txtQty.getText());
+            BookTM book = new BookTM(txtId.getText(), txtTitle.getText(), txtAuthor.getText(), txtCategory.getText(), qty);
+            bookService.saveBook(book);
+            showAlert(Alert.AlertType.INFORMATION, "Success", "Book saved successfully!");
+            loadAllBooks();
+            clearFields();
         } catch (NumberFormatException e) {
             showAlert(Alert.AlertType.ERROR, "Invalid Input", "Quantity must be a valid number.");
-        } catch (SQLException e) {
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Database Error", "Failed to save the book.");
+        } catch (IllegalArgumentException | SQLException e) {
+            showAlert(Alert.AlertType.ERROR, "Error", e.getMessage());
         }
     }
 
@@ -208,25 +146,15 @@ public class BookManagementController implements Initializable {
 
         try {
             int qty = Integer.parseInt(txtQty.getText());
-            Connection connection = DBConnection.getInstance().getConnection();
-            String sql = "UPDATE Books SET title=?, author=?, category=?, qty=? WHERE book_id=?";
-            PreparedStatement pstm = connection.prepareStatement(sql);
-            pstm.setString(1, txtTitle.getText());
-            pstm.setString(2, txtAuthor.getText());
-            pstm.setString(3, txtCategory.getText());
-            pstm.setInt(4, qty);
-            pstm.setString(5, txtId.getText());
-
-            if (pstm.executeUpdate() > 0) {
-                showAlert(Alert.AlertType.INFORMATION, "Success", "Book updated successfully!");
-                loadAllBooks();
-                clearFields();
-            }
+            BookTM book = new BookTM(txtId.getText(), txtTitle.getText(), txtAuthor.getText(), txtCategory.getText(), qty);
+            bookService.updateBook(book);
+            showAlert(Alert.AlertType.INFORMATION, "Success", "Book updated successfully!");
+            loadAllBooks();
+            clearFields();
         } catch (NumberFormatException e) {
             showAlert(Alert.AlertType.ERROR, "Invalid Input", "Quantity must be a valid number.");
-        } catch (SQLException e) {
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Update Error", "Could not update book.");
+        } catch (IllegalArgumentException | SQLException e) {
+            showAlert(Alert.AlertType.ERROR, "Update Error", e.getMessage());
         }
     }
 
@@ -238,25 +166,17 @@ public class BookManagementController implements Initializable {
             return;
         }
 
-        // Call your custom dark confirmation dialog!
         boolean confirm = showDarkConfirmation(
                 "Confirm Deletion",
                 "Are you sure you want to permanently delete '" + selectedBook.getTitle() + "'?"
         );
 
-        // If the user clicked "Yes, Delete", execute the SQL
         if (confirm) {
             try {
-                Connection connection = DBConnection.getInstance().getConnection();
-                PreparedStatement pstm = connection.prepareStatement("DELETE FROM Books WHERE book_id=?");
-                pstm.setString(1, selectedBook.getBookId());
-
-                if (pstm.executeUpdate() > 0) {
-                    // Show sliding notification on success
-                    showAlert(Alert.AlertType.INFORMATION, "Deleted", "Book has been removed from inventory.");
-                    loadAllBooks();
-                    clearFields();
-                }
+                bookService.deleteBook(selectedBook.getBookId());
+                showAlert(Alert.AlertType.INFORMATION, "Deleted", "Book has been removed from inventory.");
+                loadAllBooks();
+                clearFields();
             } catch (SQLException e) {
                 e.printStackTrace();
                 showAlert(Alert.AlertType.ERROR, "Deletion Failed", "Cannot delete a book that is currently rented.");
@@ -265,28 +185,24 @@ public class BookManagementController implements Initializable {
     }
 
     private boolean showDarkConfirmation(String title, String message) {
-        // 1. Create a new borderless window (Stage)
         javafx.stage.Stage dialogStage = new javafx.stage.Stage();
-        dialogStage.initModality(javafx.stage.Modality.APPLICATION_MODAL); // Blocks the main window
-        dialogStage.initStyle(javafx.stage.StageStyle.TRANSPARENT); // Borderless and transparent
+        dialogStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+        dialogStage.initStyle(javafx.stage.StageStyle.TRANSPARENT);
 
-        // Array to hold the user's answer (needs to be an array to update inside the lambda)
         boolean[] result = {false};
 
-        // 2. Build the Dark UI (VBox)
         VBox root = new VBox(20);
         root.setAlignment(Pos.CENTER);
         root.setPadding(new javafx.geometry.Insets(25));
         root.setStyle(
                 "-fx-background-color: #1e293b; " +
-                        "-fx-border-color: #ef4444; " + // Red border to indicate a destructive action
+                        "-fx-border-color: #ef4444; " +
                         "-fx-border-width: 2; " +
                         "-fx-background-radius: 8; " +
                         "-fx-border-radius: 8; " +
                         "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 20, 0, 0, 0);"
         );
 
-        // 3. Add Labels
         Label lblTitle = new Label(title);
         lblTitle.setStyle("-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;");
 
@@ -294,7 +210,6 @@ public class BookManagementController implements Initializable {
         lblMessage.setWrapText(true);
         lblMessage.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 14px; -fx-alignment: center;");
 
-        // 4. Add Buttons
         Button btnYes = new Button("Yes, Delete");
         btnYes.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-padding: 8 20; -fx-background-radius: 5;");
         btnYes.setOnAction(e -> {
@@ -315,31 +230,28 @@ public class BookManagementController implements Initializable {
 
         root.getChildren().addAll(lblTitle, lblMessage, buttonBox);
 
-        // 5. Setup Scene and Show
         javafx.scene.Scene scene = new javafx.scene.Scene(root, 350, 180);
-        scene.setFill(javafx.scene.paint.Color.TRANSPARENT); // Removes white corners
+        scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
         dialogStage.setScene(scene);
 
-        // Center it relative to the main window
         javafx.stage.Window mainWindow = tblBooks.getScene().getWindow();
         dialogStage.setX(mainWindow.getX() + (mainWindow.getWidth() / 2) - 175);
         dialogStage.setY(mainWindow.getY() + (mainWindow.getHeight() / 2) - 90);
 
-        // Pause the code here until the user clicks a button
         dialogStage.showAndWait();
 
         return result[0];
     }
 
     private void showAlert(Alert.AlertType alertType, String title, String message) {
-        String accentColor = "#10b981"; // Success Green
+        String accentColor = "#10b981";
         String symbol = "✔";
 
         if (alertType == Alert.AlertType.ERROR) {
-            accentColor = "#ef4444"; // Red
+            accentColor = "#ef4444";
             symbol = "✖";
         } else if (alertType == Alert.AlertType.WARNING) {
-            accentColor = "#f59e0b"; // Yellow
+            accentColor = "#f59e0b";
             symbol = "⚠";
         }
 

@@ -10,8 +10,12 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import java.net.URL?>
 
-<AnchorPane prefHeight="650.0" prefWidth="950.0" style="-fx-background-color: #0f172a;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MemberManagementController">
+<AnchorPane prefHeight="650.0" prefWidth="950.0" styleClass="main-pane" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sanda.librarymanagement.controller.MemberManagementController">
+    <stylesheets>
+        <URL value="@css/style.css" />
+    </stylesheets>
     <children>
         <VBox layoutX="30.0" layoutY="30.0" spacing="20.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="30.0">
             <children>
@@ -19,65 +23,57 @@
                     <children>
                         <VBox spacing="5.0" HBox.hgrow="ALWAYS">
                             <children>
-                                <Label text="Customer Management" textFill="WHITE">
-                                    <font>
-                                        <Font name="Segoe UI Bold" size="24.0" />
-                                    </font>
-                                </Label>
-                                <Label text="Quickly find and manage library members." textFill="#94a3b8" />
+                                <Label styleClass="report-title" text="Customer Management" />
+                                <Label styleClass="report-subtitle" text="Quickly find and manage library members." />
                             </children>
                         </VBox>
-                        <TextField fx:id="txtSearchCustomer" prefHeight="40.0" prefWidth="300.0" promptText="Search Name or Contact..." style="-fx-background-color: #1e293b; -fx-text-fill: white; -fx-background-radius: 8; -fx-border-color: #334155; -fx-border-radius: 8;" />
+                        <TextField fx:id="txtSearchCustomer" prefHeight="40.0" prefWidth="300.0" promptText="Search Name or Contact..." styleClass="search-field" />
                     </children>
                 </HBox>
 
                 <HBox spacing="25.0" VBox.vgrow="ALWAYS">
                     <children>
-                        <VBox prefWidth="320.0" spacing="12.0" style="-fx-background-color: #1e293b; -fx-padding: 20; -fx-background-radius: 15;">
+                        <VBox prefWidth="320.0" spacing="12.0" styleClass="form-box">
                             <children>
-                                <Label text="Customer Details" textFill="WHITE">
-                                    <font>
-                                        <Font name="System Bold" size="16.0" />
-                                    </font>
-                                </Label>
+                                <Label styleClass="form-title" text="Customer Details" />
                                 <VBox spacing="5.0">
                                     <children>
-                                        <Label text="ID" textFill="#94a3b8" />
-                                        <TextField fx:id="txtCustId" editable="false" prefHeight="35.0" promptText="Auto-ID" style="-fx-background-color: #0f172a; -fx-text-fill: #64748b; -fx-border-color: #334155;" />
+                                        <Label styleClass="form-label" text="ID" />
+                                        <TextField fx:id="txtCustId" editable="false" prefHeight="35.0" promptText="Auto-ID" styleClass="form-textfield" />
                                     </children>
                                 </VBox>
                                 <VBox spacing="5.0">
                                     <children>
-                                        <Label text="Full Name" textFill="#94a3b8" />
-                                        <TextField fx:id="txtCustName" prefHeight="35.0" style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-border-color: #334155;" />
+                                        <Label styleClass="form-label" text="Full Name" />
+                                        <TextField fx:id="txtCustName" prefHeight="35.0" styleClass="form-textfield" />
                                     </children>
                                 </VBox>
                                 <VBox spacing="5.0">
                                     <children>
-                                        <Label text="Address" textFill="#94a3b8" />
-                                        <TextField fx:id="txtCustAddress" prefHeight="35.0" style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-border-color: #334155;" />
+                                        <Label styleClass="form-label" text="Address" />
+                                        <TextField fx:id="txtCustAddress" prefHeight="35.0" styleClass="form-textfield" />
                                     </children>
                                 </VBox>
                                 <VBox spacing="5.0">
                                     <children>
-                                        <Label text="Contact Number" textFill="#94a3b8" />
-                                        <TextField fx:id="txtCustContact" prefHeight="35.0" style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-border-color: #334155;" />
+                                        <Label styleClass="form-label" text="Contact Number" />
+                                        <TextField fx:id="txtCustContact" prefHeight="35.0" styleClass="form-textfield" />
                                     </children>
                                 </VBox>
                                 <VBox spacing="5.0">
                                     <children>
-                                        <Label text="Email" textFill="#94a3b8" />
-                                        <TextField fx:id="txtCustEmail" prefHeight="35.0" style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-border-color: #334155;" />
+                                        <Label styleClass="form-label" text="Email" />
+                                        <TextField fx:id="txtCustEmail" prefHeight="35.0" styleClass="form-textfield" />
                                     </children>
                                 </VBox>
 
                                 <VBox spacing="15.0" style="-fx-padding: 10 0 0 0;">
                                     <children>
-                                        <Button fx:id="btnSaveCust" maxWidth="Infinity" onAction="#saveCustomerOnAction" prefHeight="40.0" style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8;" text="Save Customer" />
+                                        <Button fx:id="btnSaveCust" maxWidth="Infinity" onAction="#saveCustomerOnAction" prefHeight="40.0" styleClass="login-button" text="Save Customer" />
                                         <HBox spacing="10.0">
                                             <children>
-                                                <Button fx:id="btnUpdateCust" maxWidth="Infinity" onAction="#updateCustomerOnAction" prefHeight="35.0" style="-fx-background-color: #10b981; -fx-text-fill: white; -fx-background-radius: 8;" text="Update" HBox.hgrow="ALWAYS" />
-                                                <Button fx:id="btnDeleteCust" maxWidth="Infinity" onAction="#deleteCustomerOnAction" prefHeight="35.0" style="-fx-background-color: #ef4444; -fx-text-fill: white; -fx-background-radius: 8;" text="Delete" HBox.hgrow="ALWAYS" />
+                                                <Button fx:id="btnUpdateCust" maxWidth="Infinity" onAction="#updateCustomerOnAction" prefHeight="35.0" styleClass="form-button-green" text="Update" HBox.hgrow="ALWAYS" />
+                                                <Button fx:id="btnDeleteCust" maxWidth="Infinity" onAction="#deleteCustomerOnAction" prefHeight="35.0" styleClass="form-button-red" text="Delete" HBox.hgrow="ALWAYS" />
                                             </children>
                                         </HBox>
                                     </children>
@@ -85,7 +81,7 @@
                             </children>
                         </VBox>
 
-                        <TableView fx:id="tblCustomers" prefHeight="200.0" style="-fx-base: #1e293b; -fx-control-inner-background: #1e293b; -fx-background-color: #1e293b; -fx-table-cell-border-color: #334155; -fx-table-header-background-color: #0f172a; -fx-border-color: #334155; -fx-border-radius: 10; -fx-background-radius: 10;" HBox.hgrow="ALWAYS">
+                        <TableView fx:id="tblCustomers" prefHeight="200.0" styleClass="table-view" HBox.hgrow="ALWAYS">
                             <columns>
                                 <TableColumn fx:id="colCustId" prefWidth="80.0" text="ID" />
                                 <TableColumn fx:id="colCustName" prefWidth="280.0" text="Full Name" />

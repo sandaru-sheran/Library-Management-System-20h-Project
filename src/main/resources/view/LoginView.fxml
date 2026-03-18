@@ -10,31 +10,28 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.text.Font?>
+<?import java.net.URL?>
 
-<AnchorPane prefHeight="616.0" prefWidth="477.0" style="-fx-background-color: #10181c;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.LoginController">
+<AnchorPane prefHeight="616.0" prefWidth="477.0" styleClass="root" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sanda.librarymanagement.controller.LoginController">
+    <stylesheets>
+        <URL value="@css/style.css" />
+    </stylesheets>
    <children>
-      <HBox alignment="CENTER_LEFT" prefHeight="35.0" style="-fx-background-color: #1e293b; -fx-padding: 0 10 0 15;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-
+      <HBox alignment="CENTER_LEFT" prefHeight="35.0" styleClass="top-bar" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Label text="Library System" textFill="#94a3b8">
+            <Label styleClass="subtitle" text="Library System">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>
             </Label>
-
             <Region HBox.hgrow="ALWAYS" />
-
-            <Button onAction="#closeApp" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand;" text="✕" />
+            <Button onAction="#closeApp" styleClass="close-button" text="✕" />
          </children>
       </HBox>
-
-      <TextField fx:id="usernameTExtField" layoutX="97.0" layoutY="211.0" prefHeight="58.0" prefWidth="259.0" promptText="Username" style="-fx-background-color: transparent; -fx-border-color: #7b8a97; -fx-border-radius: 15; -fx-background-radius: 15; -fx-text-fill: white; -fx-prompt-text-fill: #9ca3af; -fx-padding: 10 15 10 15; -fx-font-size: 14px;" />
-
-      <PasswordField fx:id="passwordTextField" layoutX="97.0" layoutY="296.0" prefHeight="58.0" prefWidth="259.0" promptText="Password" style="-fx-background-color: transparent; -fx-border-color: #7b8a97; -fx-border-radius: 15; -fx-background-radius: 15; -fx-text-fill: white; -fx-prompt-text-fill: #9ca3af; -fx-padding: 10 15 10 15; -fx-font-size: 14px;" />
-
-      <Button fx:id="loginbtn" layoutX="97.0" layoutY="424.0" onAction="#login" prefHeight="58.0" prefWidth="259.0" style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 15; -fx-font-weight: bold; -fx-font-size: 18px; -fx-font-family: 'Century Gothic', sans-serif; -fx-cursor: hand; -fx-letter-spacing: 2px;" text="LOGIN" />
-
-      <Label alignment="CENTER" layoutX="161.0" layoutY="73.0" prefHeight="72.0" prefWidth="259.0" style="-fx-font-weight: 900; -fx-font-family: 'Segoe UI', sans-serif;" text="𝐋𝐨𝐠 𝐈𝐧" textFill="WHITE">
+      <TextField fx:id="usernameTExtField" layoutX="97.0" layoutY="211.0" prefHeight="58.0" prefWidth="259.0" promptText="Username" styleClass="text-field" />
+      <PasswordField fx:id="passwordTextField" layoutX="97.0" layoutY="296.0" prefHeight="58.0" prefWidth="259.0" promptText="Password" styleClass="text-field" />
+      <Button fx:id="loginbtn" layoutX="97.0" layoutY="424.0" onAction="#login" prefHeight="58.0" prefWidth="259.0" styleClass="primary-button, button-blue" text="LOGIN" />
+      <Label alignment="CENTER" layoutX="161.0" layoutY="73.0" prefHeight="72.0" prefWidth="259.0" styleClass="page-title" text="𝐋𝐨𝐠 𝐈𝐧">
          <font>
             <Font size="59.0" />
          </font>
@@ -45,6 +42,5 @@
          </image>
       </ImageView>
       <Label fx:id="errorMasageLable" layoutX="97.0" layoutY="374.0" prefHeight="17.0" prefWidth="259.0" />
-
    </children>
 </AnchorPane>

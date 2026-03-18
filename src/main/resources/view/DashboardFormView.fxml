@@ -8,21 +8,23 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import java.net.URL?>
 
-<AnchorPane prefHeight="650.0" prefWidth="840.0" style="-fx-background-color: #0f172a;"
-            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="controller.DashboardController">
+<AnchorPane prefHeight="650.0" prefWidth="840.0" styleClass="main-pane" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sanda.librarymanagement.controller.DashboardController">
+    <stylesheets>
+        <URL value="@css/style.css" />
+    </stylesheets>
     <children>
         <VBox layoutX="40.0" layoutY="30.0" spacing="30.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="30.0">
             <children>
                 <VBox spacing="5.0">
                     <children>
-                        <Label text="System Overview" textFill="WHITE">
+                        <Label styleClass="dashboard-title" text="System Overview">
                             <font>
                                 <Font name="Segoe UI Bold" size="28.0" />
                             </font>
                         </Label>
-                        <Label text="Welcome back! Here is what's happening in the library today." textFill="#94a3b8">
+                        <Label styleClass="dashboard-subtitle" text="Welcome back! Here is what's happening in the library today.">
                             <font>
                                 <Font size="14.0" />
                             </font>
@@ -32,9 +34,9 @@
 
                 <HBox spacing="20.0">
                     <children>
-                        <VBox prefHeight="120.0" prefWidth="240.0" style="-fx-background-color: #1e293b; -fx-background-radius: 15; -fx-padding: 20; -fx-border-color: #3b82f6; -fx-border-radius: 15;">
+                        <VBox prefHeight="120.0" prefWidth="240.0" styleClass="metric-box, metric-box-blue">
                             <children>
-                                <Label text="Total Books" textFill="#94a3b8" />
+                                <Label styleClass="metric-label" text="Total Books" />
                                 <Region VBox.vgrow="ALWAYS" />
                                 <Label fx:id="lblTotalBooks" text="0" textFill="WHITE">
                                     <font>
@@ -44,9 +46,9 @@
                             </children>
                         </VBox>
 
-                        <VBox prefHeight="120.0" prefWidth="240.0" style="-fx-background-color: #1e293b; -fx-background-radius: 15; -fx-padding: 20; -fx-border-color: #10b981; -fx-border-radius: 15;">
+                        <VBox prefHeight="120.0" prefWidth="240.0" styleClass="metric-box, metric-box-green">
                             <children>
-                                <Label text="Registered Members" textFill="#94a3b8" />
+                                <Label styleClass="metric-label" text="Registered Members" />
                                 <Region VBox.vgrow="ALWAYS" />
                                 <Label fx:id="lblTotalMembers" text="0" textFill="WHITE">
                                     <font>
@@ -56,9 +58,9 @@
                             </children>
                         </VBox>
 
-                        <VBox prefHeight="120.0" prefWidth="240.0" style="-fx-background-color: #1e293b; -fx-background-radius: 15; -fx-padding: 20; -fx-border-color: #ef4444; -fx-border-radius: 15;">
+                        <VBox prefHeight="120.0" prefWidth="240.0" styleClass="metric-box, metric-box-red">
                             <children>
-                                <Label text="Overdue Books" textFill="#94a3b8" />
+                                <Label styleClass="metric-label" text="Overdue Books" />
                                 <Region VBox.vgrow="ALWAYS" />
                                 <Label fx:id="lblOverdueBooks" text="0" textFill="WHITE">
                                     <font>
@@ -70,14 +72,14 @@
                     </children>
                 </HBox>
 
-                <VBox prefHeight="350.0" spacing="15.0" style="-fx-background-color: #1e293b; -fx-background-radius: 15; -fx-padding: 20;" VBox.vgrow="ALWAYS">
+                <VBox prefHeight="350.0" spacing="15.0" styleClass="recent-rentals-box" VBox.vgrow="ALWAYS">
                     <children>
-                        <Label text="Recent Transactions" textFill="WHITE">
+                        <Label styleClass="recent-rentals-title" text="Recent Transactions">
                             <font>
                                 <Font name="System Bold" size="18.0" />
                             </font>
                         </Label>
-                        <TableView fx:id="tblRecentTransactions" prefHeight="200.0" prefWidth="200.0" style="-fx-base: #1e293b; -fx-control-inner-background: #1e293b; -fx-background-color: #1e293b; -fx-table-cell-border-color: #334155; -fx-table-header-background-color: #0f172a; -fx-border-color: #334155; -fx-border-radius: 10; -fx-background-radius: 10;" VBox.vgrow="ALWAYS">
+                        <TableView fx:id="tblRecentTransactions" prefHeight="200.0" prefWidth="200.0" styleClass="table-view" VBox.vgrow="ALWAYS">
                             <columns>
                                 <TableColumn fx:id="colTransId" prefWidth="100.0" text="ID" />
                                 <TableColumn fx:id="colMemberName" prefWidth="250.0" text="Member Name" />

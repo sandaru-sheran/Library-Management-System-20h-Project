@@ -1,9 +1,8 @@
 package controller;
-
-import Model.PopularBookTM;
-import db.DBConnection;
+import dto.PopularBookDTO;
+import factory.ServiceFactory;
+import service.AdminReportsService;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -16,17 +15,10 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Text;
-import net.sf.jasperreports.engine.*;
-import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.xml.JRXmlLoader;
-import net.sf.jasperreports.view.JasperViewer;
+import net.sf.jasperreports.engine.JRException;
 
-import java.io.InputStream;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ResourceBundle;
 
 public class AdminReportsController implements Initializable {
@@ -35,15 +27,16 @@ public class AdminReportsController implements Initializable {
     @FXML private Label lblOutstandingFines;
     @FXML private Label lblActiveRentals;
     @FXML private PieChart chartInventory;
-    @FXML private TableView<PopularBookTM> tblPopularBooks;
-    @FXML private TableColumn<PopularBookTM, String> colRankBookTitle;
-    @FXML private TableColumn<PopularBookTM, String> colRankCategory;
-    @FXML private TableColumn<PopularBookTM, Integer> colRankCount;
+    @FXML private TableView<PopularBookDTO> tblPopularBooks;
+    @FXML private TableColumn<PopularBookDTO, String> colRankBookTitle;
+    @FXML private TableColumn<PopularBookDTO, String> colRankCategory;
+    @FXML private TableColumn<PopularBookDTO, Integer> colRankCount;
 
-    private final ObservableList<PopularBookTM> popularBooksList = FXCollections.observableArrayList();
+    private AdminReportsService adminReportsService;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        adminReportsService = ServiceFactory.getInstance().getService(AdminReportsService.class);
         colRankBookTitle.setCellValueFactory(new PropertyValueFactory<>("bookTitle"));
         colRankCategory.setCellValueFactory(new PropertyValueFactory<>("category"));
         colRankCount.setCellValueFactory(new PropertyValueFactory<>("borrowCount"));
@@ -55,29 +48,9 @@ public class AdminReportsController implements Initializable {
 
     private void loadMetrics() {
         try {
-            Connection connection = DBConnection.getInstance().getConnection();
-            Statement stm = connection.createStatement();
-
-            // 1. Total Revenue (Fines that are PAID)
-            ResultSet rsRevenue = stm.executeQuery("SELECT SUM(fine) FROM Rentals WHERE payment_status = 'Paid'");
-            if (rsRevenue.next()) {
-                double revenue = rsRevenue.getDouble(1);
-                lblTotalRevenue.setText(String.format("%.2f LKR", revenue));
-            }
-
-            // 2. Outstanding Fines (Fines that are PENDING)
-            ResultSet rsFines = stm.executeQuery("SELECT SUM(fine) FROM Rentals WHERE payment_status = 'Pending'");
-            if (rsFines.next()) {
-                double fines = rsFines.getDouble(1);
-                lblOutstandingFines.setText(String.format("%.2f LKR", fines));
-            }
-
-            // 3. Active Rentals (Books currently 'Borrowed' or 'Overdue')
-            ResultSet rsActive = stm.executeQuery("SELECT COUNT(*) FROM Rentals WHERE status != 'Returned'");
-            if (rsActive.next()) {
-                lblActiveRentals.setText(String.valueOf(rsActive.getInt(1)));
-            }
-
+            lblTotalRevenue.setText(String.format("%.2f LKR", adminReportsService.getTotalRevenue()));
+            lblOutstandingFines.setText(String.format("%.2f LKR", adminReportsService.getOutstandingFines()));
+            lblActiveRentals.setText(String.valueOf(adminReportsService.getActiveRentals()));
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -86,99 +59,42 @@ public class AdminReportsController implements Initializable {
     @FXML
     void exportReportOnAction(ActionEvent event) {
         try {
-            // 1. Establish Database Connection
-            Connection connection = DBConnection.getInstance().getConnection();
-
-            // 2. Load the compiled report or source jrxml
-            // Ensure "RentalReport.jrxml" is in src/view/reports/
-            InputStream reportStream = getClass().getResourceAsStream("/view/reports/RentalReport.jrxml");
-
-            if (reportStream == null) {
-                new Alert(Alert.AlertType.ERROR, "Report file not found! Check path: /view/reports/RentalReport.jrxml").show();
-                return;
-            }
-
-            // 3. Compile the Report
-            JasperDesign jasperDesign = JRXmlLoader.load(reportStream);
-            JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
-
-            // 4. Fill the Report with Data (No parameters needed for this full report)
-            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, null, connection);
-
-            // 5. View the Report
-            // false = close only the report window, not the whole app
-            JasperViewer.viewReport(jasperPrint, false);
-
+            adminReportsService.exportReport();
         } catch (JRException | SQLException e) {
             e.printStackTrace();
             new Alert(Alert.AlertType.ERROR, "Failed to generate report: " + e.getMessage()).show();
         }
     }
+
     private void loadPieChartData() {
-        ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
         try {
-            Connection connection = DBConnection.getInstance().getConnection();
-            // Grouping books by category to see the inventory spread
-            ResultSet rs = connection.createStatement().executeQuery(
-                    "SELECT category, COUNT(*) FROM Books GROUP BY category"
-            );
-
-            while (rs.next()) {
-                pieChartData.add(new PieChart.Data(rs.getString(1), rs.getInt(2)));
-            }
-            chartInventory.setData(pieChartData);
-
-            // --- INLINE DARK THEME STYLING FOR PIE CHART ---
+            chartInventory.setData(adminReportsService.getPieChartData());
             Platform.runLater(() -> {
-                // 1. Make the Pie Chart slice labels white
                 for (Node node : chartInventory.lookupAll(".chart-pie-label")) {
                     if (node instanceof Text) {
                         ((Text) node).setFill(javafx.scene.paint.Color.WHITE);
                     }
                 }
-
-                // 2. Make the Legend background transparent
                 Node legend = chartInventory.lookup(".chart-legend");
                 if (legend != null) {
                     legend.setStyle("-fx-background-color: transparent;");
                 }
-
-                // 3. Make the Legend text white
                 for (Node node : chartInventory.lookupAll(".chart-legend-item")) {
                     if (node instanceof Label) {
                         ((Label) node).setTextFill(javafx.scene.paint.Color.WHITE);
                     }
                 }
             });
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     private void loadPopularBooksData() {
-        popularBooksList.clear();
         try {
-            Connection connection = DBConnection.getInstance().getConnection();
-            // Joining Rentals and Books to see which titles are trending
-            String sql = "SELECT b.title, b.category, COUNT(r.rental_id) as count " +
-                    "FROM Rentals r JOIN Books b ON r.book_id = b.book_id " +
-                    "GROUP BY b.book_id ORDER BY count DESC LIMIT 5";
-
-            ResultSet rs = connection.createStatement().executeQuery(sql);
-
-            while (rs.next()) {
-                popularBooksList.add(new PopularBookTM(
-                        rs.getString("title"),
-                        rs.getString("category"),
-                        rs.getInt("count")
-                ));
-            }
-            tblPopularBooks.setItems(popularBooksList);
-
+            tblPopularBooks.setItems(adminReportsService.getPopularBooksData());
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-
 }

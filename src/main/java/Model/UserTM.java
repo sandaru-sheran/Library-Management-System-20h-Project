@@ -1,4 +1,4 @@
-package Model;
+package model;
 
 public class UserTM {
     private String userId;
