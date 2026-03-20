@@ -1,8 +1,8 @@
 package controller;
 
 import dto.BookDTO;
+import factory.ServiceFactory;
 import service.AdminBookOverviewService;
-import service.impl.AdminBookOverviewServiceImpl;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -33,7 +33,7 @@ public class AdminBookOverviewController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        adminBookOverviewService = new AdminBookOverviewServiceImpl();
+        adminBookOverviewService = ServiceFactory.getInstance().getService(AdminBookOverviewService.class);
         colBookId.setCellValueFactory(new PropertyValueFactory<>("bookId"));
         colBookTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
         colBookAuthor.setCellValueFactory(new PropertyValueFactory<>("author"));

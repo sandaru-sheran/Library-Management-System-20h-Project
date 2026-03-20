@@ -1,9 +1,9 @@
 package service.impl;
 
 import dto.RentalDTO;
+import factory.RepositoryFactory;
 import model.Rental;
 import repository.RentalManagementRepository;
-import repository.impl.RentalManagementRepositoryImpl;
 import service.RentalManagementService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -17,7 +17,7 @@ public class RentalManagementServiceImpl implements RentalManagementService {
     private final RentalManagementRepository rentalManagementRepository;
 
     public RentalManagementServiceImpl() {
-        this.rentalManagementRepository = new RentalManagementRepositoryImpl();
+        this.rentalManagementRepository = RepositoryFactory.getInstance().getRepository(RentalManagementRepository.class);
     }
 
     @Override

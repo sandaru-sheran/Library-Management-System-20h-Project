@@ -1,7 +1,7 @@
 package controller;
-import model.CustomerTM;
+import factory.ServiceFactory;
+import dto.tm.CustomerTM;
 import service.MemberManagementService;
-import service.impl.MemberManagementServiceImpl;
 import javafx.animation.PauseTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -41,7 +41,7 @@ public class MemberManagementController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        memberManagementService = new MemberManagementServiceImpl();
+        memberManagementService = ServiceFactory.getInstance().getService(MemberManagementService.class);
         colCustId.setCellValueFactory(new PropertyValueFactory<>("custId"));
         colCustName.setCellValueFactory(new PropertyValueFactory<>("name"));
         colCustContact.setCellValueFactory(new PropertyValueFactory<>("contact"));
@@ -228,6 +228,12 @@ public class MemberManagementController implements Initializable {
 
     private boolean showDarkConfirmation(String title, String message) {
         javafx.stage.Stage dialogStage = new javafx.stage.Stage();
+
+        // --- THE FIX: Grab window and set owner immediately ---
+        javafx.stage.Window mainWindow = tblCustomers.getScene().getWindow();
+        dialogStage.initOwner(mainWindow);
+        // ------------------------------------------------------
+
         dialogStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
         dialogStage.initStyle(javafx.stage.StageStyle.TRANSPARENT);
 
@@ -276,7 +282,6 @@ public class MemberManagementController implements Initializable {
         scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
         dialogStage.setScene(scene);
 
-        javafx.stage.Window mainWindow = tblCustomers.getScene().getWindow();
         dialogStage.setX(mainWindow.getX() + (mainWindow.getWidth() / 2) - 175);
         dialogStage.setY(mainWindow.getY() + (mainWindow.getHeight() / 2) - 90);
 

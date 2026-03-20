@@ -1,6 +1,6 @@
 package controller;
 import factory.ServiceFactory;
-import model.BookTM;
+import dto.tm.BookTM;
 import service.BookService;
 import javafx.animation.PauseTransition;
 import javafx.collections.FXCollections;
@@ -186,6 +186,12 @@ public class BookManagementController implements Initializable {
 
     private boolean showDarkConfirmation(String title, String message) {
         javafx.stage.Stage dialogStage = new javafx.stage.Stage();
+
+        // --- THE FIX: Grab window and set owner immediately ---
+        javafx.stage.Window mainWindow = tblBooks.getScene().getWindow();
+        dialogStage.initOwner(mainWindow);
+        // ------------------------------------------------------
+
         dialogStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
         dialogStage.initStyle(javafx.stage.StageStyle.TRANSPARENT);
 
@@ -234,7 +240,6 @@ public class BookManagementController implements Initializable {
         scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
         dialogStage.setScene(scene);
 
-        javafx.stage.Window mainWindow = tblBooks.getScene().getWindow();
         dialogStage.setX(mainWindow.getX() + (mainWindow.getWidth() / 2) - 175);
         dialogStage.setY(mainWindow.getY() + (mainWindow.getHeight() / 2) - 90);
 
@@ -242,7 +247,6 @@ public class BookManagementController implements Initializable {
 
         return result[0];
     }
-
     private void showAlert(Alert.AlertType alertType, String title, String message) {
         String accentColor = "#10b981";
         String symbol = "✔";

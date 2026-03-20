@@ -1,6 +1,6 @@
 package service;
 
-import model.BookTM;
+import dto.tm.BookTM;
 import javafx.collections.ObservableList;
 import java.sql.SQLException;
 

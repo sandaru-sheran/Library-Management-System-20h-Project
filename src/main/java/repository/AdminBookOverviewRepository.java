@@ -1,6 +1,6 @@
 package repository;
 
-import domain.Book;
+import model.Book;
 import java.sql.SQLException;
 import java.util.List;
 

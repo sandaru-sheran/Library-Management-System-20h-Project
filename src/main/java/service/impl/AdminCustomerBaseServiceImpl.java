@@ -1,8 +1,8 @@
 package service.impl;
 
-import model.CustomerTM;
+import factory.RepositoryFactory;
+import dto.tm.CustomerTM;
 import repository.AdminCustomerBaseRepository;
-import repository.impl.AdminCustomerBaseRepositoryImpl;
 import service.AdminCustomerBaseService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -14,7 +14,7 @@ public class AdminCustomerBaseServiceImpl implements AdminCustomerBaseService {
     private final AdminCustomerBaseRepository adminCustomerBaseRepository;
 
     public AdminCustomerBaseServiceImpl() {
-        this.adminCustomerBaseRepository = new AdminCustomerBaseRepositoryImpl();
+        this.adminCustomerBaseRepository = RepositoryFactory.getInstance().getRepository(AdminCustomerBaseRepository.class);
     }
 
     @Override

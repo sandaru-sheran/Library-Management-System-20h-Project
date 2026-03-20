@@ -1,9 +1,9 @@
 package service.impl;
 
 import dto.TransactionDTO;
+import factory.RepositoryFactory;
 import model.Transaction;
 import repository.DashboardRepository;
-import repository.impl.DashboardRepositoryImpl;
 import service.DashboardService;
 
 import java.sql.SQLException;
@@ -15,7 +15,7 @@ public class DashboardServiceImpl implements DashboardService {
     private final DashboardRepository dashboardRepository;
 
     public DashboardServiceImpl() {
-        this.dashboardRepository = new DashboardRepositoryImpl();
+        this.dashboardRepository = RepositoryFactory.getInstance().getRepository(DashboardRepository.class);
     }
 
     @Override

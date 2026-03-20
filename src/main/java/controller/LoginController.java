@@ -1,8 +1,8 @@
 package controller;
 
 import dto.UserDTO;
+import factory.ServiceFactory;
 import service.UserService;
-import service.impl.UserServiceImpl;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -30,7 +30,7 @@ public class LoginController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        userService = new UserServiceImpl();
+        userService = ServiceFactory.getInstance().getService(UserService.class);
     }
 
     @FXML
@@ -77,7 +77,7 @@ public class LoginController implements Initializable {
         Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
         Stage stage = (Stage) usernameTExtField.getScene().getWindow();
         stage.setScene(new Scene(root));
-        stage.centerOnScreen();
+        stage.setFullScreen(true);
         stage.show();
     }
 

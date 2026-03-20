@@ -26,16 +26,14 @@ public class StaffMainController {
 
     public void initialize() {
 
-
         if (btnClose != null) {
+            String closeDefault = "-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 0; -fx-border-radius: 0; -fx-cursor: hand;";
+            String closeHover = "-fx-background-color: #e81123; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 0; -fx-border-radius: 0; -fx-cursor: hand;";
 
-            btnClose.setOnMouseEntered(e -> {
-                btnClose.getStyleClass().add("close-button-hover");
-            });
-            btnClose.setOnMouseExited(e -> {
-                btnClose.getStyleClass().remove("close-button-hover");
-            });
+            btnClose.setOnMouseEntered(e -> btnClose.setStyle(closeHover));
+            btnClose.setOnMouseExited(e -> btnClose.setStyle(closeDefault));
         }
+
         sidebarButtons = Arrays.asList(btnDashboard, btnBooks, btnMembers, btnBorrow);
 
         // 1. Load default dashboard
@@ -70,12 +68,15 @@ public class StaffMainController {
 
 
     private void updateButtonStyle(Button selectedButton) {
+        String defaultStyle = "-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-background-radius: 10; -fx-font-weight: bold; -fx-alignment: CENTER_LEFT; -fx-padding: 0 0 0 20; -fx-cursor: hand;";
+        String activeStyle = "-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 10; -fx-font-weight: bold; -fx-alignment: CENTER_LEFT; -fx-padding: 0 0 0 20; -fx-cursor: hand;";
+
         for (Button btn : sidebarButtons) {
-            if (btn == selectedButton) {
-                btn.getStyleClass().add("staff-sidebar-button-active");
-            } else {
-                btn.getStyleClass().remove("staff-sidebar-button-active");
-            }
+            btn.setStyle(defaultStyle);
+        }
+
+        if (selectedButton != null) {
+            selectedButton.setStyle(activeStyle);
         }
     }
 

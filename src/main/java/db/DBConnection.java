@@ -6,37 +6,31 @@ import java.sql.SQLException;
 
 public class DBConnection {
     private static DBConnection dbConnection;
-    private Connection connection;
 
     // Default credentials
     private static String dbUrl = "jdbc:mysql://localhost:3306/library_system";
     private static String dbUser = "root";
     private static String dbPass = "1234";
 
-    private DBConnection() throws SQLException {
-        connect();
+    private DBConnection() {
+        // private constructor to enforce singleton
     }
 
-    private void connect() throws SQLException {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            connection = DriverManager.getConnection(dbUrl, dbUser, dbPass);
-            System.out.println("Connection Successful: Library Database is online.");
-        } catch (ClassNotFoundException e) {
-            System.err.println("Driver Error: MySQL Connector/J library is missing!");
-            throw new SQLException("Database Driver not found.");
-        }
-    }
-
-    public static DBConnection getInstance() throws SQLException {
+    public static DBConnection getInstance() {
         if (dbConnection == null) {
             dbConnection = new DBConnection();
         }
         return dbConnection;
     }
 
-    public Connection getConnection() {
-        return connection;
+    public Connection getConnection() throws SQLException {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            return DriverManager.getConnection(dbUrl, dbUser, dbPass);
+        } catch (ClassNotFoundException e) {
+            System.err.println("Driver Error: MySQL Connector/J library is missing!");
+            throw new SQLException("Database Driver not found.");
+        }
     }
 
     // NEW: Method to update credentials dynamically from the Setup UI
@@ -45,10 +39,9 @@ public class DBConnection {
         dbUser = user;
         dbPass = pass;
 
-        // Reset the singleton so it tries to connect with the new credentials
-        if (dbConnection != null && dbConnection.connection != null && !dbConnection.connection.isClosed()) {
-            dbConnection.connection.close();
+        // Test the new connection
+        try (Connection connection = getInstance().getConnection()) {
+            System.out.println("Credentials updated and connection successful.");
         }
-        dbConnection = new DBConnection();
     }
 }

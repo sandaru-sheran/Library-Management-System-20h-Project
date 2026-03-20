@@ -1,4 +1,4 @@
-package Model;
+package dto.tm;
 
 public class RentalLogTM {
     private String rentalId;

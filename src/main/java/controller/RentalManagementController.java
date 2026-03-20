@@ -1,7 +1,7 @@
 package controller;
 import dto.RentalDTO;
+import factory.ServiceFactory;
 import service.RentalManagementService;
-import service.impl.RentalManagementServiceImpl;
 import javafx.animation.PauseTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -44,7 +44,7 @@ public class RentalManagementController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        rentalManagementService = new RentalManagementServiceImpl();
+        rentalManagementService = ServiceFactory.getInstance().getService(RentalManagementService.class);
         colRentalId.setCellValueFactory(new PropertyValueFactory<>("rentalId"));
         colRentalBookId.setCellValueFactory(new PropertyValueFactory<>("bookId"));
         colRentalCustId.setCellValueFactory(new PropertyValueFactory<>("custId"));

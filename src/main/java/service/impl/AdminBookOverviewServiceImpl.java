@@ -1,9 +1,9 @@
 package service.impl;
 
 import dto.BookDTO;
-import domain.Book;
+import factory.RepositoryFactory;
+import model.Book;
 import repository.AdminBookOverviewRepository;
-import repository.impl.AdminBookOverviewRepositoryImpl;
 import service.AdminBookOverviewService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,7 +16,7 @@ public class AdminBookOverviewServiceImpl implements AdminBookOverviewService {
     private final AdminBookOverviewRepository adminBookOverviewRepository;
 
     public AdminBookOverviewServiceImpl() {
-        this.adminBookOverviewRepository = new AdminBookOverviewRepositoryImpl();
+        this.adminBookOverviewRepository = RepositoryFactory.getInstance().getRepository(AdminBookOverviewRepository.class);
     }
 
     @Override

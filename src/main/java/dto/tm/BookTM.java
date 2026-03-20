@@ -1,4 +1,4 @@
-package model;
+package dto.tm;
 
 public class BookTM {
     private String bookId;

@@ -1,6 +1,6 @@
 package service;
 
-import model.CustomerTM;
+import dto.tm.CustomerTM;
 import javafx.collections.ObservableList;
 import java.sql.SQLException;
 

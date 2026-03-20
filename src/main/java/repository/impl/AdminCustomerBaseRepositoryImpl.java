@@ -1,7 +1,7 @@
 package repository.impl;
 
 import db.DBConnection;
-import model.CustomerTM;
+import dto.tm.CustomerTM;
 import repository.AdminCustomerBaseRepository;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

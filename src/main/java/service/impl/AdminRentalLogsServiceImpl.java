@@ -1,9 +1,9 @@
 package service.impl;
 
 import dto.RentalLogDTO;
+import factory.RepositoryFactory;
 import model.Rental;
 import repository.AdminRentalLogsRepository;
-import repository.impl.AdminRentalLogsRepositoryImpl;
 import service.AdminRentalLogsService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,7 +16,7 @@ public class AdminRentalLogsServiceImpl implements AdminRentalLogsService {
     private final AdminRentalLogsRepository adminRentalLogsRepository;
 
     public AdminRentalLogsServiceImpl() {
-        this.adminRentalLogsRepository = new AdminRentalLogsRepositoryImpl();
+        this.adminRentalLogsRepository = RepositoryFactory.getInstance().getRepository(AdminRentalLogsRepository.class);
     }
 
     @Override

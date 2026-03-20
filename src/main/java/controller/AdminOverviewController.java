@@ -1,7 +1,7 @@
 package controller;
 import dto.RecentRentalDTO;
+import factory.ServiceFactory;
 import service.AdminOverviewService;
-import service.impl.AdminOverviewServiceImpl;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -32,7 +32,7 @@ public class AdminOverviewController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        adminOverviewService = new AdminOverviewServiceImpl();
+        adminOverviewService = ServiceFactory.getInstance().getService(AdminOverviewService.class);
         colDate.setCellValueFactory(new PropertyValueFactory<>("date"));
         colCustomerName.setCellValueFactory(new PropertyValueFactory<>("customerName"));
         colBookTitle.setCellValueFactory(new PropertyValueFactory<>("bookTitle"));

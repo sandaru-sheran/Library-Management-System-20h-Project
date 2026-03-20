@@ -1,18 +1,22 @@
 package service.impl;
 
-import dto.PopularBookDTO;
 import model.PopularBook;
-import repository.AdminReportsRepository;
-import repository.impl.AdminReportsRepositoryImpl;
-import service.AdminReportsService;
+import db.DBConnection;
+import dto.PopularBookDTO;
+import factory.RepositoryFactory;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.PieChart;
-import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.view.JasperViewer;
-import db.DBConnection;
+import repository.AdminReportsRepository;
+import service.AdminReportsService;
 
 import java.io.InputStream;
 import java.sql.SQLException;
@@ -23,7 +27,7 @@ public class AdminReportsServiceImpl implements AdminReportsService {
     private final AdminReportsRepository adminReportsRepository;
 
     public AdminReportsServiceImpl() {
-        this.adminReportsRepository = new AdminReportsRepositoryImpl();
+        this.adminReportsRepository = RepositoryFactory.getInstance().getRepository(AdminReportsRepository.class);
     }
 
     @Override

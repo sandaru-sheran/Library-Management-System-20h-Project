@@ -1,9 +1,9 @@
 package service.impl;
 
 import dto.UserDTO;
+import factory.RepositoryFactory;
 import model.User;
 import repository.UserRepository;
-import repository.impl.UserRepositoryImpl;
 import service.UserService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,7 +16,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     public UserServiceImpl() {
-        this.userRepository = new UserRepositoryImpl();
+        this.userRepository = RepositoryFactory.getInstance().getRepository(UserRepository.class);
     }
 
     @Override

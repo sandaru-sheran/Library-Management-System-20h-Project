@@ -1,14 +1,14 @@
-package domain;
+package dto.tm;
 
-public class Customer {
-    private String id;
+public class CustomerTM {
+    private String custId;
     private String name;
     private String address;
     private String contact;
     private String email;
 
-    public Customer(String id, String name, String address, String contact, String email) {
-        this.id = id;
+    public CustomerTM(String custId, String name, String address, String contact, String email) {
+        this.custId = custId;
         this.name = name;
         this.address = address;
         this.contact = contact;
@@ -16,8 +16,8 @@ public class Customer {
     }
 
     // Getters and Setters
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    public String getCustId() { return custId; }
+    public void setCustId(String custId) { this.custId = custId; }
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
     public String getAddress() { return address; }

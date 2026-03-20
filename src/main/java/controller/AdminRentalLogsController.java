@@ -1,8 +1,8 @@
 package controller;
 
 import dto.RentalLogDTO;
+import factory.ServiceFactory;
 import service.AdminRentalLogsService;
-import service.impl.AdminRentalLogsServiceImpl;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -36,7 +36,7 @@ public class AdminRentalLogsController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        adminRentalLogsService = new AdminRentalLogsServiceImpl();
+        adminRentalLogsService = ServiceFactory.getInstance().getService(AdminRentalLogsService.class);
         colRentalId.setCellValueFactory(new PropertyValueFactory<>("rentalId"));
         colBookId.setCellValueFactory(new PropertyValueFactory<>("bookId"));
         colCustId.setCellValueFactory(new PropertyValueFactory<>("custId"));

@@ -1,8 +1,8 @@
 package controller;
 
-import model.CustomerTM;
+import factory.ServiceFactory;
+import dto.tm.CustomerTM;
 import service.AdminCustomerBaseService;
-import service.impl.AdminCustomerBaseServiceImpl;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -33,7 +33,7 @@ public class AdminCustomerBaseController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        adminCustomerBaseService = new AdminCustomerBaseServiceImpl();
+        adminCustomerBaseService = ServiceFactory.getInstance().getService(AdminCustomerBaseService.class);
         colCustId.setCellValueFactory(new PropertyValueFactory<>("custId"));
         colCustName.setCellValueFactory(new PropertyValueFactory<>("name"));
         colCustAddress.setCellValueFactory(new PropertyValueFactory<>("address"));

@@ -1,9 +1,9 @@
 package service.impl;
 
-import model.BookTM;
-import domain.Book;
+import factory.RepositoryFactory;
+import dto.tm.BookTM;
+import model.Book;
 import repository.BookRepository;
-import repository.impl.BookRepositoryImpl;
 import service.BookService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,7 +16,7 @@ public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
 
     public BookServiceImpl() {
-        this.bookRepository = new BookRepositoryImpl();
+        this.bookRepository = RepositoryFactory.getInstance().getRepository(BookRepository.class);
     }
 
     @Override

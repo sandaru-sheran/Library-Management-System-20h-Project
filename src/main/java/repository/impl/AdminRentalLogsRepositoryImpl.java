@@ -3,7 +3,10 @@ package repository.impl;
 import db.DBConnection;
 import model.Rental;
 import repository.AdminRentalLogsRepository;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +15,7 @@ public class AdminRentalLogsRepositoryImpl implements AdminRentalLogsRepository 
     @Override
     public List<Rental> getRentalLogs() throws SQLException {
         List<Rental> logList = new ArrayList<>();
-        String sql = "SELECT * FROM Rentals ORDER BY issue_date DESC";
+        String sql = "SELECT rental_id, book_id, cust_id, issue_date, due_date, return_date, status, fine, payment_status FROM Rentals ORDER BY issue_date DESC";
         try (Connection connection = DBConnection.getInstance().getConnection();
              PreparedStatement pstm = connection.prepareStatement(sql);
              ResultSet resultSet = pstm.executeQuery()) {

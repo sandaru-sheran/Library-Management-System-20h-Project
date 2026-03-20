@@ -1,6 +1,6 @@
 package repository;
 
-import domain.Customer;
+import model.Customer;
 import java.sql.SQLException;
 import java.util.List;
 

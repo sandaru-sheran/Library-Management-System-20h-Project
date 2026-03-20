@@ -1,7 +1,7 @@
 package repository.impl;
 
 import db.DBConnection;
-import domain.Book;
+import model.Book;
 import repository.AdminBookOverviewRepository;
 import java.sql.Connection;
 import java.sql.ResultSet;

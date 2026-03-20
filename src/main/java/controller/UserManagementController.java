@@ -1,8 +1,8 @@
 package controller;
 
 import dto.UserDTO;
+import factory.ServiceFactory;
 import service.UserService;
-import service.impl.UserServiceImpl;
 import javafx.animation.PauseTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -39,7 +39,7 @@ public class UserManagementController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        userService = new UserServiceImpl();
+        userService = ServiceFactory.getInstance().getService(UserService.class);
         colUserId.setCellValueFactory(new PropertyValueFactory<>("userId"));
         colUsername.setCellValueFactory(new PropertyValueFactory<>("username"));
         colRole.setCellValueFactory(new PropertyValueFactory<>("role"));
@@ -158,6 +158,13 @@ public class UserManagementController implements Initializable {
 
     private boolean showDarkConfirmation(String title, String message) {
         javafx.stage.Stage dialogStage = new javafx.stage.Stage();
+
+        // 1. Get the main window right away
+        javafx.stage.Window mainWindow = tblUsers.getScene().getWindow();
+
+        // 2. SET THE OWNER: This forces the prompt to stay glued to the front of your main app
+        dialogStage.initOwner(mainWindow);
+
         dialogStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
         dialogStage.initStyle(javafx.stage.StageStyle.TRANSPARENT);
 
@@ -206,7 +213,7 @@ public class UserManagementController implements Initializable {
         scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
         dialogStage.setScene(scene);
 
-        javafx.stage.Window mainWindow = tblUsers.getScene().getWindow();
+        // Position it perfectly in the center of the main window
         dialogStage.setX(mainWindow.getX() + (mainWindow.getWidth() / 2) - 175);
         dialogStage.setY(mainWindow.getY() + (mainWindow.getHeight() / 2) - 90);
 

@@ -1,9 +1,9 @@
 package service.impl;
 
 import dto.RecentRentalDTO;
+import factory.RepositoryFactory;
 import model.Transaction;
 import repository.AdminOverviewRepository;
-import repository.impl.AdminOverviewRepositoryImpl;
 import service.AdminOverviewService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,7 +16,7 @@ public class AdminOverviewServiceImpl implements AdminOverviewService {
     private final AdminOverviewRepository adminOverviewRepository;
 
     public AdminOverviewServiceImpl() {
-        this.adminOverviewRepository = new AdminOverviewRepositoryImpl();
+        this.adminOverviewRepository = RepositoryFactory.getInstance().getRepository(AdminOverviewRepository.class);
     }
 
     @Override

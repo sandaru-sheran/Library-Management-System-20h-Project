@@ -1,9 +1,9 @@
 package service.impl;
 
-import model.CustomerTM;
-import domain.Customer;
+import factory.RepositoryFactory;
+import dto.tm.CustomerTM;
+import model.Customer;
 import repository.MemberManagementRepository;
-import repository.impl.MemberManagementRepositoryImpl;
 import service.MemberManagementService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,7 +16,7 @@ public class MemberManagementServiceImpl implements MemberManagementService {
     private final MemberManagementRepository memberManagementRepository;
 
     public MemberManagementServiceImpl() {
-        this.memberManagementRepository = new MemberManagementRepositoryImpl();
+        this.memberManagementRepository = RepositoryFactory.getInstance().getRepository(MemberManagementRepository.class);
     }
 
     @Override

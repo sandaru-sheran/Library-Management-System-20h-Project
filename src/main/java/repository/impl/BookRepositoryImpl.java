@@ -1,7 +1,7 @@
 package repository.impl;
 
 import db.DBConnection;
-import domain.Book;
+import model.Book;
 import repository.BookRepository;
 import java.sql.*;
 import java.util.ArrayList;

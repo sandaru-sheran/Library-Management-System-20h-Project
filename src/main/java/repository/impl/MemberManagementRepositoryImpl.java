@@ -1,7 +1,7 @@
 package repository.impl;
 
 import db.DBConnection;
-import domain.Customer;
+import model.Customer;
 import repository.MemberManagementRepository;
 import java.sql.*;
 import java.util.ArrayList;
