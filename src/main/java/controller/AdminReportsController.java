@@ -3,7 +3,6 @@ import dto.PopularBookDTO;
 import factory.ServiceFactory;
 import service.AdminReportsService;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -36,6 +35,7 @@ public class AdminReportsController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        System.out.println("AdminReportsController: Initializing...");
         adminReportsService = ServiceFactory.getInstance().getService(AdminReportsService.class);
         colRankBookTitle.setCellValueFactory(new PropertyValueFactory<>("bookTitle"));
         colRankCategory.setCellValueFactory(new PropertyValueFactory<>("category"));
@@ -44,6 +44,7 @@ public class AdminReportsController implements Initializable {
         loadMetrics();
         loadPieChartData();
         loadPopularBooksData();
+        System.out.println("AdminReportsController: Initialization complete.");
     }
 
     private void loadMetrics() {
@@ -58,11 +59,19 @@ public class AdminReportsController implements Initializable {
 
     @FXML
     void exportReportOnAction(ActionEvent event) {
+        System.out.println("AdminReportsController: exportReportOnAction button clicked.");
         try {
             adminReportsService.exportReport();
-        } catch (JRException | SQLException e) {
+            System.out.println("AdminReportsController: exportReport() service call finished.");
+        } catch (JRException e) {
             e.printStackTrace();
-            new Alert(Alert.AlertType.ERROR, "Failed to generate report: " + e.getMessage()).show();
+            showAlert(Alert.AlertType.ERROR, "Report Error", "Could not generate the report. The template file might be corrupt or missing: " + e.getMessage());
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Database Error", "Could not connect to the database to generate the report: " + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "System Error", "An unexpected error occurred: " + e.getMessage());
         }
     }
 
@@ -96,5 +105,13 @@ public class AdminReportsController implements Initializable {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    private void showAlert(Alert.AlertType alertType, String title, String message) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }
